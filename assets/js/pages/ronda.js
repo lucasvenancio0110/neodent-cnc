@@ -40,6 +40,7 @@ const prevStepBtn = document.getElementById("prevStepBtn");
 const nextStepBtn = document.getElementById("nextStepBtn");
 const saveStepBtn = document.getElementById("saveStepBtn");
 const decisionBox = document.getElementById("decisionBox");
+const decisionOriginalHtml = decisionBox.innerHTML;
 const mpPiecesWrap = document.getElementById("mpPiecesWrap");
 const mpMmWrap = document.getElementById("mpMmWrap");
 const horaSolicitar = document.getElementById("horaSolicitar");
@@ -55,23 +56,10 @@ function readLocal() {
   catch (_) { return {}; }
 }
 
-function saveLocal(map) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
-}
-
-function selected(name) {
-  return form.querySelector(`[name="${name}"]:checked`)?.value || "";
-}
-
-function show(text, type = "") {
-  msg.textContent = text;
-  msg.className = `form-msg ${type}`.trim();
-}
-
-function currentTurnText() {
-  const now = new Date();
-  return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`;
-}
+function saveLocal(map) { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
+function selected(name) { return form.querySelector(`[name="${name}"]:checked`)?.value || ""; }
+function show(text, type = "") { msg.textContent = text; msg.className = `form-msg ${type}`.trim(); }
+function currentTurnText() { const now = new Date(); return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`; }
 
 function getPayload() {
   const data = Object.fromEntries(new FormData(form).entries());
@@ -127,11 +115,7 @@ function serializableCalc(calc) {
 async function api(path, options = {}) {
   const res = await fetch(API + path, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-      ...(options.headers || {})
-    }
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, ...(options.headers || {}) }
   });
   const data = await res.json().catch(() => null);
   if (!res.ok) throw new Error((data && data.error) || "Erro na API");
@@ -169,40 +153,11 @@ function setupCellOptions() {
   if (!CELULAS[currentCelula]) currentCelula = "CÉLULA 05";
   celulaSelect.value = currentCelula;
 }
-
-function localForCell() {
-  const map = readLocal();
-  return map[currentCelula] || {};
-}
-
-function writeMachineReading(machineId, item) {
-  const map = readLocal();
-  map[currentCelula] = map[currentCelula] || {};
-  map[currentCelula][machineId] = item;
-  saveLocal(map);
-}
-
-function clearCellReadings() {
-  const map = readLocal();
-  map[currentCelula] = {};
-  saveLocal(map);
-  renderAll();
-}
-
-function machineTone(reading) {
-  if (!reading) return "empty";
-  if (reading.tone === "bad") return "bad";
-  if (reading.tone === "warn") return "warn";
-  return "ok";
-}
-
-function cardMeta(reading) {
-  if (!reading) return "Sem leitura";
-  const calc = reading.calc || {};
-  const end = calc.endAt ? new Date(calc.endAt) : null;
-  const when = end ? fmtTime(end) : "--:--";
-  return `${calc.statusText || "Lida"} • ${when}`;
-}
+function localForCell() { return readLocal()[currentCelula] || {}; }
+function writeMachineReading(machineId, item) { const map = readLocal(); map[currentCelula] = map[currentCelula] || {}; map[currentCelula][machineId] = item; saveLocal(map); }
+function clearCellReadings() { const map = readLocal(); map[currentCelula] = {}; saveLocal(map); renderAll(); }
+function machineTone(reading) { if (!reading) return "empty"; if (reading.tone === "bad") return "bad"; if (reading.tone === "warn") return "warn"; return "ok"; }
+function cardMeta(reading) { if (!reading) return "Sem leitura"; const calc = reading.calc || {}; const end = calc.endAt ? new Date(calc.endAt) : null; return `${calc.statusText || "Lida"} • ${end ? fmtTime(end) : "--:--"}`; }
 
 function renderSummary(readings, machines) {
   const values = machines.map((m) => readings[m.id]).filter(Boolean);
@@ -210,12 +165,7 @@ function renderSummary(readings, machines) {
   const next = values.filter((r) => r.calc?.status === "next").length;
   const ok = values.filter((r) => r.calc?.status === "ok" || r.calc?.status === "done").length;
   const pending = machines.length - values.length;
-  rondaSummary.innerHTML = `
-    <div><span>Sem leitura</span><strong>${pending}</strong></div>
-    <div><span>Neste turno</span><strong>${now}</strong></div>
-    <div><span>Próximo</span><strong>${next}</strong></div>
-    <div><span>Estáveis</span><strong>${ok}</strong></div>
-  `;
+  rondaSummary.innerHTML = `<div><span>Sem leitura</span><strong>${pending}</strong></div><div><span>Neste turno</span><strong>${now}</strong></div><div><span>Próximo</span><strong>${next}</strong></div><div><span>Estáveis</span><strong>${ok}</strong></div>`;
 }
 
 function renderMachines() {
@@ -225,31 +175,14 @@ function renderMachines() {
   localCount.textContent = `${Object.keys(readings).length}/${machines.length}`;
   cardCount.textContent = String(Object.values(readings).filter((item) => item.cardGerado).length);
   renderSummary(readings, machines);
-
   machineGrid.innerHTML = machines.map((machine) => {
     const reading = readings[machine.id];
-    const tone = machineTone(reading);
-    const action = reading?.acaoLabel || "Tirar tempo";
-    return `
-      <button type="button" class="machine-tile ${tone}" data-machine-id="${machine.id}">
-        <strong>${machine.tnl}</strong>
-        <span>${cardMeta(reading)}</span>
-        <em>${action}</em>
-      </button>
-    `;
+    return `<button type="button" class="machine-tile ${machineTone(reading)}" data-machine-id="${machine.id}"><strong>${machine.tnl}</strong><span>${cardMeta(reading)}</span><em>${reading?.acaoLabel || "Tirar tempo"}</em></button>`;
   }).join("");
 }
 
-function renderAll() {
-  setupCellOptions();
-  renderMachines();
-}
-
-function updateMpVisibility() {
-  const mode = selected("mpModo") || "pieces";
-  mpPiecesWrap.classList.toggle("hidden", mode !== "pieces");
-  mpMmWrap.classList.toggle("hidden", mode !== "partialMm");
-}
+function renderAll() { setupCellOptions(); renderMachines(); }
+function updateMpVisibility() { const mode = selected("mpModo") || "pieces"; mpPiecesWrap.classList.toggle("hidden", mode !== "pieces"); mpMmWrap.classList.toggle("hidden", mode !== "partialMm"); }
 
 function renderProjection() {
   updateMpVisibility();
@@ -268,9 +201,7 @@ function renderProjection() {
 
 function setStep(step) {
   currentStep = Math.max(1, Math.min(4, step));
-  form.querySelectorAll(".wizard-step").forEach((section) => {
-    section.hidden = Number(section.dataset.step) !== currentStep;
-  });
+  form.querySelectorAll(".wizard-step").forEach((section) => { section.hidden = Number(section.dataset.step) !== currentStep; });
   modalStepLabel.textContent = `Etapa ${currentStep} de 4`;
   prevStepBtn.hidden = currentStep === 1;
   nextStepBtn.hidden = currentStep === 4;
@@ -278,6 +209,8 @@ function setStep(step) {
   if (currentStep === 3 || currentStep === 4) renderProjection();
   if (currentStep === 4 && latestCalc && !latestCalc.showDecision) {
     decisionBox.innerHTML = `<div class="stable-save"><strong>Leitura estável</strong><span>Não precisa definir preset. Salve para marcar a máquina como lida.</span></div>`;
+  } else if (!decisionBox.querySelector("[name='acao']")) {
+    decisionBox.innerHTML = decisionOriginalHtml;
   }
 }
 
@@ -285,6 +218,7 @@ function openMachine(machineId) {
   currentMachine = parseMaquina(machineId);
   const reading = localForCell()[machineId];
   form.reset();
+  decisionBox.innerHTML = decisionOriginalHtml;
   form.elements.tnl.value = currentMachine.tnl;
   form.elements.mpModo.value = "pieces";
   form.elements.barrasInteiras.value = "0";
@@ -294,9 +228,7 @@ function openMachine(machineId) {
       if (key === "mpModo" || key === "acao" || key === "preset") {
         const radio = form.querySelector(`[name="${key}"][value="${value}"]`);
         if (radio) radio.checked = true;
-      } else {
-        form.elements[key].value = value ?? "";
-      }
+      } else form.elements[key].value = value ?? "";
     });
   }
   modalTitle.textContent = `TNL ${currentMachine.tnl}`;
@@ -309,62 +241,17 @@ function openMachine(machineId) {
   setTimeout(() => form.querySelector("[name='ciclo']")?.focus(), 120);
 }
 
-function closeModal() {
-  modal.hidden = true;
-  document.body.classList.remove("modal-open");
-  currentMachine = null;
-}
-
-function canAdvance() {
-  if (currentStep === 1) {
-    if (!form.elements.ciclo.value || !form.elements.metaOp.value) {
-      show("Informe ciclo e meta da OP.", "bad");
-      return false;
-    }
-  }
-  if (currentStep === 2) {
-    if (!form.elements.pecaMm.value) {
-      show("Informe o comprimento da peça em mm.", "bad");
-      return false;
-    }
-  }
-  show("Continue a leitura.");
-  return true;
-}
+function closeModal() { modal.hidden = true; document.body.classList.remove("modal-open"); currentMachine = null; }
+function canAdvance() { if (currentStep === 1 && (!form.elements.ciclo.value || !form.elements.metaOp.value)) { show("Informe ciclo e meta da OP.", "bad"); return false; } if (currentStep === 2 && !form.elements.pecaMm.value) { show("Informe o comprimento da peça em mm.", "bad"); return false; } show("Continue a leitura."); return true; }
 
 form.addEventListener("input", renderProjection);
 form.addEventListener("change", renderProjection);
-
-form.querySelectorAll(".step-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const input = form.elements.barrasInteiras;
-    input.value = String(Math.max(0, Number(input.value || 0) + Number(btn.dataset.stepChange)));
-    renderProjection();
-  });
-});
-
-machineGrid.addEventListener("click", (event) => {
-  const tile = event.target.closest(".machine-tile");
-  if (!tile) return;
-  openMachine(tile.dataset.machineId);
-});
-
-modal.addEventListener("click", (event) => {
-  if (event.target.closest("[data-close-modal]")) closeModal();
-});
-
+form.querySelectorAll(".step-btn").forEach((btn) => { btn.addEventListener("click", () => { const input = form.elements.barrasInteiras; input.value = String(Math.max(0, Number(input.value || 0) + Number(btn.dataset.stepChange))); renderProjection(); }); });
+machineGrid.addEventListener("click", (event) => { const tile = event.target.closest(".machine-tile"); if (tile) openMachine(tile.dataset.machineId); });
+modal.addEventListener("click", (event) => { if (event.target.closest("[data-close-modal]")) closeModal(); });
 prevStepBtn.addEventListener("click", () => setStep(currentStep - 1));
-nextStepBtn.addEventListener("click", () => {
-  if (!canAdvance()) return;
-  setStep(currentStep + 1);
-});
-
-celulaSelect.addEventListener("change", () => {
-  currentCelula = celulaSelect.value;
-  localStorage.setItem(CELL_KEY, currentCelula);
-  renderAll();
-});
-
+nextStepBtn.addEventListener("click", () => { if (canAdvance()) setStep(currentStep + 1); });
+celulaSelect.addEventListener("change", () => { currentCelula = celulaSelect.value; localStorage.setItem(CELL_KEY, currentCelula); renderAll(); });
 document.getElementById("resetRondaBtn").addEventListener("click", clearCellReadings);
 
 form.addEventListener("submit", async (event) => {
@@ -373,28 +260,11 @@ form.addEventListener("submit", async (event) => {
   const calc = calcRonda(payload, RONDA_DEFAULT_SETTINGS, new Date());
   if (!payload.tnl) return show("Máquina não encontrada.", "bad");
   if (!calc.valid) return show("Complete os dados antes de salvar.", "bad");
-
   const created = new Date();
   const machineId = currentMachine?.id || payload.tnl;
-  const localItem = {
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-    machineId,
-    celula: currentCelula,
-    payload,
-    calc: serializableCalc(calc),
-    acaoLabel: calc.showDecision ? actionLabel(payload.acao) : "Leitura estável",
-    tone: calc.showDecision ? actionTone(payload.acao) : calc.severity,
-    cardGerado: false,
-    createdAt: created.toISOString(),
-    createdLabel: `${fmtDate(created)} ${fmtTime(created)}`
-  };
-
+  const localItem = { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), machineId, celula: currentCelula, payload, calc: serializableCalc(calc), acaoLabel: calc.showDecision ? actionLabel(payload.acao) : "Leitura estável", tone: calc.showDecision ? actionTone(payload.acao) : calc.severity, cardGerado: false, createdAt: created.toISOString(), createdLabel: `${fmtDate(created)} ${fmtTime(created)}` };
   try {
-    if (calc.showDecision) {
-      show("Salvando e gerando card vivo...");
-      await gerarCard(payload, calc);
-      localItem.cardGerado = true;
-    }
+    if (calc.showDecision) { show("Salvando e gerando card vivo..."); await gerarCard(payload, calc); localItem.cardGerado = true; }
     writeMachineReading(machineId, localItem);
     renderAll();
     show(localItem.cardGerado ? "Leitura salva e card gerado." : "Leitura estável salva.", "ok");
@@ -406,12 +276,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-function tick() {
-  const now = new Date();
-  clockNow.textContent = `${fmtTime(now)}:${String(now.getSeconds()).padStart(2, "0")}`;
-  turnoAtual.textContent = currentTurnText();
-}
-
+function tick() { const now = new Date(); clockNow.textContent = `${fmtTime(now)}:${String(now.getSeconds()).padStart(2, "0")}`; turnoAtual.textContent = currentTurnText(); }
 tick();
 setInterval(tick, 1000);
 renderAll();
