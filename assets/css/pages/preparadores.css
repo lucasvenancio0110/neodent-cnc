@@ -1,1 +1,1 @@
-/* Estilos específicos dos preparadores. */
+#ocorrenciaForm{display:grid;gap:16px}#ocorrenciaMsg{margin-top:2px}.form-card+.empty-state{background:rgba(255,255,255,.055)}@media(max-width:520px){#ocorrenciaForm{gap:14px}.form-card{padding:16px;border-radius:24px}.action-row .btn{width:100%}.page-hero p{font-size:15px}}
