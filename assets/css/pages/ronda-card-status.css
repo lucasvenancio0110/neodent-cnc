@@ -1,67 +1,64 @@
 /*
   PADRÃO OPERACIONAL DOS CARDS DA RONDA
-
-  empty = sem leitura / ainda nem olharam -> apagado, cinza, foda-se por enquanto
-  ok    = estável / produzindo -> verde bem leve, baixa atenção
-  warn  = próximo turno / atenção -> amarelo, olhar depois
-  bad   = neste turno / crítico / setup vermelho / falta MP / manutenção -> vermelho, ação agora
+  Sem leitura = apagado | Produzindo estável = discreto | Setup = azul | Ajuste = laranja | Manutenção = vermelho | Apoio = roxo.
 */
 
-.machine-tile{
-  transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
-}
+.machine-tile{transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;}
 .machine-tile:active{transform:scale(.985);}
 
-.machine-tile.empty{
-  background:rgba(255,255,255,.055);
-  border-color:rgba(210,225,230,.16);
-  box-shadow:none;
-  color:#a9b8be;
-}
-.machine-tile.empty::before{background:#6e7c83;opacity:.55;}
-.machine-tile.empty strong{color:#c2cbd0;opacity:.72;}
+.machine-tile.empty{background:rgba(255,255,255,.052);border-color:rgba(210,225,230,.15);box-shadow:none;color:#a9b8be;}
+.machine-tile.empty::before{background:#6e7c83;opacity:.52;}
+.machine-tile.empty strong{color:#c2cbd0;opacity:.68;}
 .machine-tile.empty span{color:#8d9ba2;}
-.machine-tile.empty em{color:#8d9ba2;opacity:.7;}
+.machine-tile.empty em{color:#8d9ba2;opacity:.65;}
 
-.machine-tile.ok{
-  background:rgba(235,250,241,.72);
-  border-color:rgba(113,194,141,.25);
-  box-shadow:0 .45rem 1rem rgba(0,8,13,.09);
-}
-.machine-tile.ok::before{background:#35a96a;opacity:.75;}
-.machine-tile.ok strong{color:#197246;}
-.machine-tile.ok span{color:#4f6c5d;}
-.machine-tile.ok em{color:#197246;}
+.machine-tile.ok{background:rgba(235,250,241,.42);border-color:rgba(113,194,141,.18);box-shadow:none;}
+.machine-tile.ok::before{background:#35a96a;opacity:.62;}
+.machine-tile.ok strong{color:#60b883;}
+.machine-tile.ok span{color:#8aa79a;}
+.machine-tile.ok em{color:#65ad83;opacity:.78;}
 
-.machine-tile.warn{
-  background:linear-gradient(145deg,#fffaf0,#fff6e6);
-  border-color:rgba(237,170,61,.44);
-  box-shadow:0 .7rem 1.4rem rgba(126,75,0,.10);
-}
+.machine-tile.warn{background:linear-gradient(145deg,#fffaf0,#fff6e6);border-color:rgba(237,170,61,.44);box-shadow:0 .7rem 1.4rem rgba(126,75,0,.10);}
 .machine-tile.warn::before{background:#edaa3d;}
 .machine-tile.warn strong{color:#9a5a08;}
 .machine-tile.warn span{color:#775c2e;}
-.machine-tile.warn em{color:#9a5a08;}
+.machine-tile.warn em{color:#9a5a08;background:rgba(237,170,61,.13);}
 
-.machine-tile.bad{
-  background:linear-gradient(145deg,#fff4f5,#fffafb);
-  border-color:rgba(224,79,90,.46);
-  box-shadow:0 .75rem 1.55rem rgba(173,48,59,.14);
-}
+.machine-tile.bad{background:linear-gradient(145deg,#fff4f5,#fffafb);border-color:rgba(224,79,90,.46);box-shadow:0 .75rem 1.55rem rgba(173,48,59,.14);}
 .machine-tile.bad::before{background:#e04f5a;}
 .machine-tile.bad strong{color:#ad303b;}
 .machine-tile.bad span{color:#7c4048;}
-.machine-tile.bad em{color:#ad303b;}
+.machine-tile.bad em{color:#ad303b;background:rgba(224,79,90,.10);}
 
-.machine-tile.bad em,
-.machine-tile.warn em{
-  border-radius:999px;
-  width:max-content;
-  max-width:100%;
-  padding:.18rem .44rem;
-}
-.machine-tile.bad em{background:rgba(224,79,90,.10);}
-.machine-tile.warn em{background:rgba(237,170,61,.13);}
+.machine-tile.op-setup{background:linear-gradient(145deg,#f3f7ff,#eaf2ff);border-color:rgba(57,120,230,.36);box-shadow:0 .7rem 1.45rem rgba(28,84,190,.13);}
+.machine-tile.op-setup::before{background:#3978e6;opacity:1;}
+.machine-tile.op-setup strong{color:#1f5fc9;}
+.machine-tile.op-setup span{color:#3f5f8c;}
+.machine-tile.op-setup em{color:#1f5fc9;background:rgba(57,120,230,.11);}
+.machine-tile.op-setup.level-red{box-shadow:0 .75rem 1.55rem rgba(224,79,90,.12);}
+.machine-tile.op-setup.level-red::after{content:"";position:absolute;right:.55rem;top:.55rem;width:.52rem;height:.52rem;border-radius:999px;background:#e04f5a;box-shadow:0 0 0 .22rem rgba(224,79,90,.12);}
+.machine-tile.op-setup.level-green::after{content:"";position:absolute;right:.55rem;top:.55rem;width:.52rem;height:.52rem;border-radius:999px;background:#35a96a;box-shadow:0 0 0 .22rem rgba(53,169,106,.12);}
+.machine-tile.op-setup.level-blue::after{content:"";position:absolute;right:.55rem;top:.55rem;width:.52rem;height:.52rem;border-radius:999px;background:#3978e6;box-shadow:0 0 0 .22rem rgba(57,120,230,.12);}
+
+.machine-tile.op-ajuste{background:linear-gradient(145deg,#fff8ea,#fff1d6);border-color:rgba(245,158,11,.42);}
+.machine-tile.op-ajuste::before{background:#f59e0b;}
+.machine-tile.op-ajuste strong{color:#a45d00;}
+.machine-tile.op-ajuste span{color:#775c2e;}
+.machine-tile.op-ajuste em{color:#a45d00;background:rgba(245,158,11,.12);}
+
+.machine-tile.op-manut{background:linear-gradient(145deg,#fff4f5,#fff0f2);border-color:rgba(224,79,90,.46);}
+.machine-tile.op-manut::before{background:#e04f5a;}
+.machine-tile.op-manut strong{color:#ad303b;}
+.machine-tile.op-manut span{color:#7c4048;}
+.machine-tile.op-manut em{color:#ad303b;background:rgba(224,79,90,.11);}
+
+.machine-tile.op-apoio{background:linear-gradient(145deg,#fbf7ff,#f3eaff);border-color:rgba(155,92,246,.38);}
+.machine-tile.op-apoio::before{background:#9b5cf6;}
+.machine-tile.op-apoio strong{color:#6f35c7;}
+.machine-tile.op-apoio span{color:#684f85;}
+.machine-tile.op-apoio em{color:#6f35c7;background:rgba(155,92,246,.12);}
+
+.machine-tile.bad em,.machine-tile.warn em,.machine-tile.op-setup em,.machine-tile.op-ajuste em,.machine-tile.op-manut em,.machine-tile.op-apoio em{border-radius:999px;width:max-content;max-width:100%;padding:.18rem .44rem;}
 
 .ronda-summary>div:first-child{background:rgba(255,255,255,.035);}
 .ronda-summary>div:first-child strong{color:#b8c5ca;}
@@ -69,67 +66,19 @@
 .ronda-summary>div:nth-child(3) strong{color:#ffc466;}
 .ronda-summary>div:nth-child(4) strong{color:#6fe0a0;}
 
-/* Etapa 4: decisão sem lista gigante. */
-.decision-step .wizard-step,
-.wizard-step.decision-step{
-  min-height:0;
-}
-.compact-title{
-  padding-bottom:.35rem;
-}
-.compact-title b{
-  font-size:1.08rem;
-}
-.compact-title span{
-  font-size:.8rem;
-}
-.compact-decision{
-  display:grid;
-  gap:.65rem;
-}
-.decision-select-wrap{
-  padding-top:.2rem;
-}
-.decision-select{
-  min-height:3rem;
-  border-color:#bfe4df;
-  background:#fff;
-  color:#12212a;
-  font-weight:1000;
-}
-.preset-row.segmented{
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  padding:.2rem 1rem 0;
-}
-.preset-row.segmented label{
-  min-height:2.8rem;
-  padding:.42rem .55rem;
-  font-size:.82rem;
-}
-.decision-fields.quick-grid{
-  padding-top:.2rem;
-}
-.decision-fields input{
-  min-height:2.8rem;
-}
-.decision-step .step-title + .compact-decision{
-  margin-top:0;
-}
+/* Etapa 4 compacta. */
+.decision-step .wizard-step,.wizard-step.decision-step{min-height:0;}
+.compact-title{padding-bottom:.35rem;}
+.compact-title b{font-size:1.08rem;}
+.compact-title span{font-size:.8rem;}
+.compact-decision{display:grid;gap:.65rem;}
+.decision-select-wrap{padding-top:.2rem;}
+.decision-select{min-height:3rem;border-color:#bfe4df;background:#fff;color:#12212a;font-weight:1000;}
+.preset-row.segmented{grid-template-columns:repeat(2,minmax(0,1fr));padding:.2rem 1rem 0;}
+.preset-row.segmented label{min-height:2.8rem;padding:.42rem .55rem;font-size:.82rem;}
+.decision-fields.quick-grid{padding-top:.2rem;}
+.decision-fields input{min-height:2.8rem;}
+.decision-step .step-title + .compact-decision{margin-top:0;}
 
-@media(max-width:27rem){
-  .preset-row.segmented{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-  .decision-fields.quick-grid.two{
-    grid-template-columns:1fr 1fr;
-  }
-  .decision-fields label span{
-    font-size:.66rem;
-  }
-}
-
-@media(max-width:22rem){
-  .decision-fields.quick-grid.two{
-    grid-template-columns:1fr;
-  }
-}
+@media(max-width:27rem){.preset-row.segmented{grid-template-columns:repeat(2,minmax(0,1fr));}.decision-fields.quick-grid.two{grid-template-columns:1fr 1fr;}.decision-fields label span{font-size:.66rem;}}
+@media(max-width:22rem){.decision-fields.quick-grid.two{grid-template-columns:1fr;}}
