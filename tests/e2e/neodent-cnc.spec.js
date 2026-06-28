@@ -6,11 +6,9 @@ const LOGIN = process.env.NC_LOGIN;
 const PASSWORD = process.env.NC_PASSWORD;
 
 test.describe("Neodent CNC - fluxo principal", () => {
-  test.beforeEach(async ({ page }, testInfo) => {
-    if (!LOGIN || !PASSWORD) {
-      testInfo.skip(true, "Configure os secrets NC_LOGIN e NC_PASSWORD no GitHub Actions.");
-    }
+  test.skip(!LOGIN || !PASSWORD, "Configure os secrets NC_LOGIN e NC_PASSWORD no GitHub Actions.");
 
+  test.beforeEach(async ({ page }) => {
     const status = await page.request.get(`${API_URL}/status`);
     expect(status.ok(), "API precisa responder /status").toBeTruthy();
   });
