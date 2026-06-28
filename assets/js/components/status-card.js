@@ -1,0 +1,1 @@
+/* status card component */
