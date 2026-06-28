@@ -28,10 +28,27 @@
   --bad: #ad303b;
   --bad-bg: #fff0f1;
   --neutral-bg: #eff3f4;
-  --radius-sm: 10px;
-  --radius: 15px;
-  --radius-lg: 21px;
-  --shadow: 0 14px 36px rgba(0, 8, 13, .18);
-  --shadow-strong: 0 24px 70px rgba(0, 8, 13, .30);
+
+  /* Escala fluida: usa rem para respeitar fonte/zoom do usuário no iPhone, Android e navegador. */
+  --font-xs: clamp(.72rem, .68rem + .18vw, .82rem);
+  --font-sm: clamp(.84rem, .78rem + .24vw, .96rem);
+  --font-md: clamp(1rem, .94rem + .28vw, 1.12rem);
+  --font-lg: clamp(1.18rem, 1.05rem + .48vw, 1.42rem);
+  --font-xl: clamp(1.44rem, 1.22rem + .82vw, 1.88rem);
+  --font-2xl: clamp(1.86rem, 1.48rem + 1.35vw, 2.48rem);
+
+  --space-1: clamp(.28rem, .24rem + .16vw, .38rem);
+  --space-2: clamp(.48rem, .42rem + .22vw, .65rem);
+  --space-3: clamp(.72rem, .62rem + .35vw, .95rem);
+  --space-4: clamp(.96rem, .82rem + .55vw, 1.28rem);
+  --space-5: clamp(1.2rem, 1rem + .75vw, 1.65rem);
+
+  --touch-min: max(2.75rem, 44px);
+  --radius-sm: .625rem;
+  --radius: .95rem;
+  --radius-lg: 1.35rem;
+  --radius-xl: 1.65rem;
+  --shadow: 0 .875rem 2.25rem rgba(0, 8, 13, .18);
+  --shadow-strong: 0 1.5rem 4.4rem rgba(0, 8, 13, .30);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
