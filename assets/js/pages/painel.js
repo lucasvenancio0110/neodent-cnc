@@ -25,6 +25,11 @@ function textOf(item) {
   return `${item.status || ""} ${item.motivo || ""} ${item.detalhe || ""} ${item.observacao || ""}`.toLowerCase();
 }
 
+function isFaltaMp(item) {
+  const s = String(item.status || "").toUpperCase();
+  return s.includes("FALTA") || s.includes("SEM_ORDEM") || textOf(item).includes("falta mp") || textOf(item).includes("falta de matéria");
+}
+
 function setupLevel(item) {
   const t = textOf(item);
   if (t.includes("setup vermelho")) return { emoji: "🔴", label: "Setup vermelho", cls: "level-red" };
@@ -33,20 +38,20 @@ function setupLevel(item) {
   return { emoji: "🔵", label: "Setup", cls: "level-blue" };
 }
 
-function statusClass(status) {
-  const s = String(status || "").toUpperCase();
+function statusClass(item) {
+  const s = String(item.status || "").toUpperCase();
   if (s.includes("SETUP")) return "status-setup";
   if (s.includes("AJUSTE")) return "status-ajuste";
-  if (s.includes("MANUT")) return "status-manutencao";
+  if (s.includes("MANUT") || isFaltaMp(item)) return "status-manutencao";
   if (s.includes("APOIO")) return "status-apoio";
   return "status-observacao";
 }
 
-function badgeClass(status) {
-  const s = String(status || "").toUpperCase();
+function badgeClass(item) {
+  const s = String(item.status || "").toUpperCase();
   if (s.includes("SETUP")) return "setup";
   if (s.includes("AJUSTE")) return "ajuste";
-  if (s.includes("MANUT")) return "manut";
+  if (s.includes("MANUT") || isFaltaMp(item)) return "manut";
   if (s.includes("APOIO")) return "apoio";
   return "obs";
 }
@@ -77,7 +82,7 @@ function tnlTitle(item, tnl) {
 
 function card(item) {
   const tnl = String(item.tnl || "").padStart(3, "0");
-  const stClass = statusClass(item.status);
+  const stClass = statusClass(item);
   const detail = compactDetail(item);
   const isSetup = stClass === "status-setup";
   const level = setupLevel(item);
@@ -92,7 +97,7 @@ function card(item) {
             <div class="machine-mini"><span>${item.status || "OBS"}</span><span>${item.aberto_por || "Sistema"}</span></div>
           </div>
         </div>
-        <span class="badge ${badgeClass(item.status)}">${apoioTexto(item)}</span>
+        <span class="badge ${badgeClass(item)}">${apoioTexto(item)}</span>
       </div>
       <div class="machine-body">
         <div class="machine-detail"><b>${detail.motivo}</b><span class="detail-line">${detail.detail}</span></div>
