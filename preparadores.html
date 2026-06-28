@@ -1,2 +1,92 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Preparadores | Neodent CNC</title><link rel="stylesheet" href="./assets/css/global.css"><link rel="stylesheet" href="./assets/css/pages/preparadores.css"></head>
-<body><div class="app-shell"><main class="app-main app-grid"><section class="page-hero"><div class="eyebrow">Preparadores</div><h1>Atualização operacional</h1><p>Abrir ajuste, setup, manutenção ou observação sem depender de texto no grupo.</p></section><form id="ocorrenciaForm" class="form-card stack"><div class="form-grid"><div class="field"><label>TNL</label><input class="input" name="tnl" required placeholder="067"></div><div class="field"><label>Status</label><select name="status" class="input"><option>AJUSTE</option><option>SETUP</option><option>MANUTENÇÃO</option><option>OBSERVAÇÃO</option></select></div><div class="field"><label>Motivo</label><input class="input" name="motivo" required placeholder="Quebra de bedame"></div><div class="field"><label>Precisa apoio?</label><select name="precisa_apoio" class="input"><option value="0">Não</option><option value="1">Sim</option></select></div></div><div class="field"><label>Detalhe</label><textarea class="input" name="detalhe" placeholder="Descreva o necessário."></textarea></div><button class="btn btn-primary" type="submit">Abrir card</button></form></main></div><script type="module" src="./assets/js/pages/preparadores.js"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Preparadores | Neodent CNC</title>
+  <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/pages/preparadores.css">
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main app-grid">
+      <section class="page-hero">
+        <div class="eyebrow">Preparadores</div>
+        <h1>Atualização operacional</h1>
+        <p>Abrir ajuste, setup, manutenção ou observação. Cada lançamento vira card vivo no painel.</p>
+      </section>
+
+      <form id="ocorrenciaForm" class="form-card stack">
+        <div class="form-grid">
+          <div class="field">
+            <label>TNL</label>
+            <input class="input" name="tnl" required placeholder="067" inputmode="numeric">
+          </div>
+
+          <div class="field">
+            <label>Célula / Linha</label>
+            <input class="input" name="celula" placeholder="Célula 08 / Linha 2">
+          </div>
+
+          <div class="field">
+            <label>Status</label>
+            <select name="status" class="input">
+              <option value="AJUSTE">AJUSTE</option>
+              <option value="SETUP">SETUP</option>
+              <option value="MANUTENCAO">MANUTENÇÃO</option>
+              <option value="OBSERVACAO">OBSERVAÇÃO</option>
+              <option value="SEM_ORDEM">SEM ORDEM</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Precisa apoio?</label>
+            <select name="precisa_apoio" class="input">
+              <option value="0">Não</option>
+              <option value="1">Sim</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Motivo</label>
+            <input class="input" name="motivo" required placeholder="Quebra de bedame">
+          </div>
+
+          <div class="field">
+            <label>Prioridade</label>
+            <select name="prioridade" class="input">
+              <option value="NORMAL">NORMAL</option>
+              <option value="ALTA">ALTA</option>
+              <option value="CRITICA">CRÍTICA</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Detalhe</label>
+          <textarea class="input" name="detalhe" placeholder="Descreva o necessário."></textarea>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" type="submit">Abrir card</button>
+          <a class="btn btn-ghost" href="./painel.html">Ver painel</a>
+        </div>
+      </form>
+
+      <section id="ocorrenciaMsg" class="empty-state">Pronto para abrir card.</section>
+
+      <section>
+        <div class="section-title">
+          <strong>Cards abertos</strong>
+          <span id="cardsCount">0</span>
+        </div>
+        <div id="cardsRecentes" class="machine-board">
+          <div class="empty-state">Carregando...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./assets/js/pages/preparadores.js"></script>
+</body>
+</html>
