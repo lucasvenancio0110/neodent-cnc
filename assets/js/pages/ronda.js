@@ -78,7 +78,38 @@ function show(text, type = "") {
   msg.className = `form-msg ${type}`.trim();
 }
 
-function currentTurnText() { const now = new Date(); return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`; }
+function currentTurnText() {
+  const now = new Date();
+  return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`;
+}
+
+function setupLevelClass(value) {
+  if (value === "setup_vermelho") return "level-red";
+  if (value === "setup_verde") return "level-green";
+  if (value === "setup_azul") return "level-blue";
+  return "";
+}
+
+function actionEmoji(value) {
+  if (value === "setup_vermelho") return "🔴";
+  if (value === "setup_verde") return "🟢";
+  if (value === "setup_azul") return "🔵";
+  return "";
+}
+
+function operationClass(reading) {
+  const acao = reading?.payload?.acao || "";
+  if (acao.startsWith("setup")) return `op-setup ${setupLevelClass(acao)}`;
+  if (acao === "manutencao" || acao === "falta_mp") return "op-manut";
+  if (acao === "ajuste") return "op-ajuste";
+  if (reading?.payload?.precisa_apoio) return "op-apoio";
+  return "";
+}
+
+function tileTitle(machine, reading) {
+  const emoji = actionEmoji(reading?.payload?.acao || "");
+  return `${emoji ? emoji + " " : ""}${machine.tnl}`;
+}
 
 function getPayload() {
   const data = Object.fromEntries(new FormData(form).entries());
@@ -102,7 +133,7 @@ function getPayload() {
 function statusForAction(action) {
   if (action.startsWith("setup")) return "SETUP";
   if (action === "manutencao") return "MANUTENCAO";
-  if (action === "falta_mp") return "SEM_ORDEM";
+  if (action === "falta_mp") return "FALTA_MP";
   return "OBSERVACAO";
 }
 
@@ -197,7 +228,8 @@ function renderMachines() {
   renderSummary(readings, machines);
   machineGrid.innerHTML = machines.map((machine, index) => {
     const reading = readings[machine.id];
-    return `<button type="button" class="machine-tile ${machineTone(reading)}" data-machine-id="${machine.id}" style="--tile-index:${index}"><strong>${machine.tnl}</strong><span>${cardMeta(reading)}</span><em>${reading?.acaoLabel || "Tirar tempo"}</em></button>`;
+    const classes = `${machineTone(reading)} ${operationClass(reading)}`.trim();
+    return `<button type="button" class="machine-tile ${classes}" data-machine-id="${machine.id}" style="--tile-index:${index}"><strong>${tileTitle(machine, reading)}</strong><span>${cardMeta(reading)}</span><em>${reading?.acaoLabel || "Tirar tempo"}</em></button>`;
   }).join("");
 }
 
