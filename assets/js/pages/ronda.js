@@ -43,7 +43,6 @@ const decisionBox = document.getElementById("decisionBox");
 const decisionOriginalHtml = decisionBox.innerHTML;
 const mpPiecesWrap = document.getElementById("mpPiecesWrap");
 const mpMmWrap = document.getElementById("mpMmWrap");
-const horaSolicitar = document.getElementById("horaSolicitar");
 const projectionBox = document.getElementById("projectionBox");
 
 let currentCelula = localStorage.getItem(CELL_KEY) || getCelulaFromUser(user);
@@ -57,7 +56,25 @@ function readLocal() {
 }
 
 function saveLocal(map) { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
-function selected(name) { return form.querySelector(`[name="${name}"]:checked`)?.value || ""; }
+
+function selected(name) {
+  const checked = form.querySelector(`[name="${name}"]:checked`);
+  if (checked) return checked.value;
+  const field = form.elements[name];
+  return field && typeof field.value === "string" ? field.value : "";
+}
+
+function setFieldValue(name, value) {
+  const field = form.elements[name];
+  if (!field) return;
+  const radio = form.querySelector(`[name="${name}"][value="${value}"]`);
+  if (radio) {
+    radio.checked = true;
+    return;
+  }
+  if (typeof field.value === "string") field.value = value ?? "";
+}
+
 function show(text, type = "") { msg.textContent = text; msg.className = `form-msg ${type}`.trim(); }
 function currentTurnText() { const now = new Date(); return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`; }
 
@@ -153,6 +170,7 @@ function setupCellOptions() {
   if (!CELULAS[currentCelula]) currentCelula = "CÉLULA 05";
   celulaSelect.value = currentCelula;
 }
+
 function localForCell() { return readLocal()[currentCelula] || {}; }
 function writeMachineReading(machineId, item) { const map = readLocal(); map[currentCelula] = map[currentCelula] || {}; map[currentCelula][machineId] = item; saveLocal(map); }
 function clearCellReadings() { const map = readLocal(); map[currentCelula] = {}; saveLocal(map); renderAll(); }
@@ -196,7 +214,8 @@ function renderProjection() {
   document.getElementById("projectionSaldo").textContent = String(latestCalc.remainingOP || 0);
   document.getElementById("projectionMp").textContent = String(latestCalc.capacity || 0);
   document.getElementById("projectionPerBar").textContent = String(latestCalc.perBar || 0);
-  if (latestCalc.endDT) horaSolicitar.value = fmtTime(latestCalc.endDT);
+  const horaInput = document.getElementById("horaSolicitar");
+  if (latestCalc.endDT && horaInput) horaInput.value = fmtTime(latestCalc.endDT);
 }
 
 function setStep(step) {
@@ -211,6 +230,7 @@ function setStep(step) {
     decisionBox.innerHTML = `<div class="stable-save"><strong>Leitura estável</strong><span>Não precisa definir preset. Salve para marcar a máquina como lida.</span></div>`;
   } else if (!decisionBox.querySelector("[name='acao']")) {
     decisionBox.innerHTML = decisionOriginalHtml;
+    renderProjection();
   }
 }
 
@@ -220,17 +240,9 @@ function openMachine(machineId) {
   form.reset();
   decisionBox.innerHTML = decisionOriginalHtml;
   form.elements.tnl.value = currentMachine.tnl;
-  form.elements.mpModo.value = "pieces";
+  setFieldValue("mpModo", "pieces");
   form.elements.barrasInteiras.value = "0";
-  if (reading?.payload) {
-    Object.entries(reading.payload).forEach(([key, value]) => {
-      if (!form.elements[key]) return;
-      if (key === "mpModo" || key === "acao" || key === "preset") {
-        const radio = form.querySelector(`[name="${key}"][value="${value}"]`);
-        if (radio) radio.checked = true;
-      } else form.elements[key].value = value ?? "";
-    });
-  }
+  if (reading?.payload) Object.entries(reading.payload).forEach(([key, value]) => setFieldValue(key, value));
   modalTitle.textContent = `TNL ${currentMachine.tnl}`;
   modalSub.textContent = `${currentCelula} • patrimônio ${currentMachine.patrimonio || "--"}`;
   modal.hidden = false;
