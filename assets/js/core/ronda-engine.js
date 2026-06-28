@@ -139,58 +139,15 @@ export function calcRonda(machine, settings = RONDA_DEFAULT_SETTINGS, baseDT = n
   const metaTurno = Number.isFinite(tempoMin) && tempoMin > 0 ? Math.floor((parseInteger(settings.turnMinutes) || 480) / tempoMin) : 0;
 
   if (!valid) {
-    return {
-      valid: false,
-      status: "idle",
-      statusText: "Aguardando dados",
-      severity: "idle",
-      title: "Preencha ciclo, meta da OP e peça em mm.",
-      reason: "dados",
-      produced,
-      remainingOP,
-      capacity,
-      perBar,
-      metaTurno,
-      showDecision: false
-    };
+    return { valid: false, status: "idle", statusText: "Aguardando dados", severity: "idle", title: "Preencha ciclo, meta da OP e peça em mm.", reason: "dados", produced, remainingOP, capacity, perBar, metaTurno, showDecision: false };
   }
 
   if (remainingOP === 0) {
-    return {
-      valid: true,
-      status: "done",
-      statusText: "OP finalizada",
-      severity: "ok",
-      title: "A OP já atingiu a meta informada.",
-      reason: "meta",
-      produced,
-      remainingOP,
-      capacity,
-      perBar,
-      metaTurno,
-      endDT: baseDT,
-      restMin: 0,
-      showDecision: false
-    };
+    return { valid: true, status: "done", statusText: "OP finalizada", severity: "ok", title: "A OP já atingiu a meta informada.", reason: "meta", produced, remainingOP, capacity, perBar, metaTurno, endDT: baseDT, restMin: 0, showDecision: false };
   }
 
   if (capacity <= 0) {
-    return {
-      valid: true,
-      status: "now",
-      statusText: "Neste turno",
-      severity: "bad",
-      title: "Sem matéria-prima disponível para continuar.",
-      reason: "mp",
-      produced,
-      remainingOP,
-      capacity,
-      perBar,
-      metaTurno,
-      endDT: baseDT,
-      restMin: 0,
-      showDecision: true
-    };
+    return { valid: true, status: "now", statusText: "Neste turno", severity: "bad", title: "Sem matéria-prima disponível para continuar.", reason: "mp", produced, remainingOP, capacity, perBar, metaTurno, endDT: baseDT, restMin: 0, showDecision: true };
   }
 
   let remainingMin = producible * tempoMin;
@@ -219,23 +176,7 @@ export function calcRonda(machine, settings = RONDA_DEFAULT_SETTINGS, baseDT = n
   };
   const [statusText, severity, title] = labels[status];
 
-  return {
-    valid: true,
-    status,
-    statusText,
-    severity,
-    title,
-    reason,
-    produced,
-    remainingOP,
-    capacity,
-    producible,
-    perBar,
-    metaTurno,
-    endDT,
-    restMin,
-    showDecision: restMin < 16 * 60
-  };
+  return { valid: true, status, statusText, severity, title, reason, produced, remainingOP, capacity, producible, perBar, metaTurno, endDT, restMin, showDecision: restMin < 16 * 60 };
 }
 
 export function reasonLabel(reason) {
@@ -247,9 +188,9 @@ export function reasonLabel(reason) {
 export function actionLabel(value) {
   const map = {
     sequencia: "Sequência normal",
-    setup_azul: "Setup azul",
-    setup_verde: "Setup verde",
-    setup_vermelho: "Setup vermelho",
+    setup_azul: "🔵 Setup azul",
+    setup_verde: "🟢 Setup verde",
+    setup_vermelho: "🔴 Setup vermelho",
     falta_mp: "Falta matéria-prima",
     manutencao: "Manutenção",
     aguardando: "Aguardando definição"
@@ -258,7 +199,7 @@ export function actionLabel(value) {
 }
 
 export function actionTone(value) {
-  if (value === "setup_vermelho" || value === "falta_mp" || value === "manutencao") return "bad";
-  if (value === "setup_verde" || value === "setup_azul" || value === "aguardando") return "warn";
+  if (value === "falta_mp" || value === "manutencao") return "bad";
+  if (value === "setup_vermelho" || value === "setup_verde" || value === "setup_azul" || value === "aguardando") return "warn";
   return "ok";
 }
