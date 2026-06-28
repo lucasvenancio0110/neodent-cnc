@@ -1,1 +1,115 @@
-.machine-board{display:grid;gap:12px}.machine-card{position:relative;overflow:hidden;border:1px solid rgba(224,234,237,.92);border-radius:var(--radius);color:var(--ink);background:var(--card);box-shadow:var(--shadow)}.machine-card::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:#a8b9bf}.machine-card.status-setup::before{background:var(--setup)}.machine-card.status-ajuste::before{background:var(--ajuste)}.machine-card.status-manutencao::before{background:var(--manut)}.machine-card.status-apoio::before{background:var(--apoio)}.machine-card.status-ok::before{background:#37b96e}.machine-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px 14px 13px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fbfc)}.machine-main{display:flex;align-items:center;gap:11px;min-width:0}.machine-token{min-width:58px;height:45px;display:grid;place-items:center;border:1px solid #d6e5e8;border-radius:13px;color:var(--primary-3);background:linear-gradient(145deg,#e8f7f5,#f7fffe);font-size:18px;font-weight:950;padding:0 10px}.machine-name{min-width:0}.machine-name strong{display:block;font-size:17px}.machine-mini{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:5px}.machine-mini span{color:var(--muted);font-size:12px;font-weight:800}.machine-body{padding:14px 14px 16px 18px;display:grid;gap:10px}.machine-detail{border:1px dashed #cbdde1;border-radius:10px;padding:9px 10px;color:#54707a;background:rgba(255,255,255,.65);font-size:13px;font-weight:850;line-height:1.42}.machine-actions{display:flex;flex-wrap:wrap;gap:8px}
+.machine-board{
+  display:grid;
+  gap:14px;
+}
+.machine-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(223,233,236,.95);
+  border-radius:24px;
+  color:var(--ink);
+  background:#fbfdfd;
+  box-shadow:0 18px 45px rgba(0,7,12,.22);
+}
+.machine-card::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:6px;
+  background:#9caeb5;
+}
+.machine-card.status-setup::before{background:var(--setup);}
+.machine-card.status-ajuste::before{background:var(--ajuste);}
+.machine-card.status-manutencao::before{background:var(--manut);}
+.machine-card.status-apoio::before{background:var(--apoio);}
+.machine-card.status-ok::before{background:#37b96e;}
+.machine-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:12px;
+  padding:16px 16px 13px 22px;
+  border-bottom:1px solid #e5edef;
+  background:linear-gradient(180deg,#fff,#f9fcfc);
+}
+.machine-main{
+  display:grid;
+  grid-template-columns:58px minmax(0,1fr);
+  gap:13px;
+  align-items:center;
+  min-width:0;
+}
+.machine-token{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border:1px solid #d4e7e8;
+  border-radius:18px;
+  color:var(--primary-3);
+  background:linear-gradient(145deg,#e8faf7,#ffffff);
+  font-size:22px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+}
+.machine-name{min-width:0;}
+.machine-name strong{
+  display:block;
+  color:#11232d;
+  font-size:21px;
+  line-height:1;
+  letter-spacing:-.05em;
+}
+.machine-mini{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.machine-mini span{
+  color:#66777f;
+  font-size:12px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.025em;
+}
+.machine-head .badge{
+  justify-self:start;
+  margin-left:71px;
+}
+.machine-body{
+  padding:14px 16px 16px 22px;
+  display:grid;
+  gap:12px;
+}
+.machine-detail{
+  border:1px solid #d9e5e8;
+  border-radius:18px;
+  padding:14px 15px;
+  color:#435963;
+  background:#fff;
+  font-size:15px;
+  font-weight:800;
+  line-height:1.42;
+}
+.machine-detail b{
+  display:block;
+  margin-bottom:3px;
+  color:#152a34;
+  font-size:16px;
+  font-weight:1000;
+}
+.machine-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.machine-actions .btn{
+  min-height:48px;
+  border-radius:16px;
+  font-size:14px;
+}
+@media (min-width:700px){
+  .machine-head{grid-template-columns:minmax(0,1fr) auto;align-items:center;}
+  .machine-head .badge{justify-self:end;margin-left:0;}
+}
