@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ronda | Neodent CNC</title>
+  <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/pages/ronda.css">
+</head>
+<body>
+  <div class="ronda-app">
+    <header class="ronda-topbar">
+      <div>
+        <span class="top-kicker">Ronda do preparador</span>
+        <strong>Tempo da Linha</strong>
+        <small id="turnoAtual">--</small>
+      </div>
+      <a href="./painel.html" class="top-link">Painel</a>
+    </header>
+
+    <main class="ronda-main">
+      <section class="ronda-status">
+        <div>
+          <span>Agora</span>
+          <strong id="clockNow">--:--</strong>
+        </div>
+        <div>
+          <span>Leituras locais</span>
+          <strong id="localCount">0</strong>
+        </div>
+        <div>
+          <span>Cards gerados</span>
+          <strong id="cardCount">0</strong>
+        </div>
+      </section>
+
+      <form id="rondaForm" class="ronda-card">
+        <section class="card-headline">
+          <div class="machine-pill">TNL</div>
+          <div>
+            <h1>Nova leitura</h1>
+            <p>Calcule se a máquina vai encerrar e transforme a decisão em card vivo.</p>
+          </div>
+        </section>
+
+        <div class="quick-grid two">
+          <label>
+            <span>Máquina</span>
+            <input name="tnl" inputmode="numeric" placeholder="093" required>
+          </label>
+          <label>
+            <span>Ciclo</span>
+            <input name="ciclo" inputmode="decimal" placeholder="7,27" required>
+          </label>
+        </div>
+
+        <section class="form-block">
+          <h2>Matéria-prima</h2>
+          <div class="segmented" id="mpModeGroup" role="radiogroup" aria-label="Matéria-prima">
+            <label><input type="radio" name="mpModo" value="pieces" checked> Peças restantes</label>
+            <label><input type="radio" name="mpModo" value="partialMm"> Parcial em mm</label>
+            <label><input type="radio" name="mpModo" value="full"> Barra cheia</label>
+          </div>
+
+          <div class="quick-grid" id="mpPiecesWrap">
+            <label>
+              <span>Peças na barra atual</span>
+              <input name="pecasRestantes" type="number" min="0" step="1" placeholder="33">
+            </label>
+          </div>
+
+          <div class="quick-grid hidden" id="mpMmWrap">
+            <label>
+              <span>mm restantes na barra atual</span>
+              <input name="parcialMm" type="number" min="0" step="0.01" placeholder="1360">
+            </label>
+          </div>
+
+          <div class="bar-row">
+            <label>
+              <span>Barras inteiras</span>
+              <input name="barrasInteiras" type="number" min="0" step="1" value="0">
+            </label>
+            <button type="button" class="step-btn" data-step="-1">−</button>
+            <button type="button" class="step-btn" data-step="1">+</button>
+          </div>
+        </section>
+
+        <div class="quick-grid two">
+          <label>
+            <span>Meta da OP</span>
+            <input name="metaOp" type="number" min="0" step="1" placeholder="665" required>
+          </label>
+          <label>
+            <span>Peça mm</span>
+            <input name="pecaMm" type="number" min="0" step="0.01" placeholder="20" required>
+          </label>
+        </div>
+
+        <label class="full-label">
+          <span>Produzidas <em>opcional</em></span>
+          <input name="produzidas" type="number" min="0" step="1" placeholder="0">
+        </label>
+
+        <section id="projectionBox" class="projection idle">
+          <div class="projection-top">
+            <span>Projeção</span>
+            <strong id="projectionTitle">Aguardando dados</strong>
+          </div>
+          <div class="projection-grid">
+            <div><span>Encerramento</span><strong id="projectionEnd">--:--</strong></div>
+            <div><span>Restante</span><strong id="projectionRest">-</strong></div>
+            <div><span>Motivo</span><strong id="projectionReason">-</strong></div>
+          </div>
+          <div class="projection-stats">
+            <div><span>Saldo OP</span><strong id="projectionSaldo">0</strong></div>
+            <div><span>MP</span><strong id="projectionMp">0</strong></div>
+            <div><span>Por barra</span><strong id="projectionPerBar">0</strong></div>
+          </div>
+        </section>
+
+        <section id="decisionBox" class="form-block decision hidden">
+          <h2>Próxima ação</h2>
+          <div class="action-grid">
+            <label><input type="radio" name="acao" value="sequencia" checked> Sequência</label>
+            <label><input type="radio" name="acao" value="setup_azul"> Setup azul</label>
+            <label><input type="radio" name="acao" value="setup_verde"> Setup verde</label>
+            <label><input type="radio" name="acao" value="setup_vermelho"> Setup vermelho</label>
+            <label><input type="radio" name="acao" value="falta_mp"> Falta MP</label>
+            <label><input type="radio" name="acao" value="manutencao"> Manutenção</label>
+            <label><input type="radio" name="acao" value="aguardando"> Aguardando definição</label>
+          </div>
+
+          <h2>Preset</h2>
+          <div class="segmented">
+            <label><input type="radio" name="preset" value="pendente" checked> Ainda não trouxe</label>
+            <label><input type="radio" name="preset" value="trouxe"> Preset já trouxe</label>
+          </div>
+
+          <div class="quick-grid two">
+            <label>
+              <span>Item próxima OP</span>
+              <input name="item" placeholder="327161">
+            </label>
+            <label>
+              <span>Hora para solicitar</span>
+              <input name="horaSolicitar" id="horaSolicitar" readonly>
+            </label>
+          </div>
+        </section>
+
+        <button class="main-action" type="submit">Salvar leitura</button>
+        <p id="formMsg" class="form-msg">Pronto para calcular.</p>
+      </form>
+
+      <section class="recent-section">
+        <div class="section-line">
+          <strong>Últimas leituras</strong>
+          <button id="clearLocalBtn" type="button">Limpar locais</button>
+        </div>
+        <div id="recentList" class="recent-list"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <a class="active" href="./ronda.html">Ronda</a>
+      <a href="./painel.html">Painel</a>
+      <a href="./apoio.html">Atividade</a>
+      <a href="./setup.html">Setup</a>
+      <a href="./index.html">Mais</a>
+    </nav>
+  </div>
+
+  <script type="module" src="./assets/js/pages/ronda.js"></script>
+</body>
+</html>
