@@ -1,2 +1,47 @@
-/* Forms styles placeholder. */
-.form-card{padding:14px;border-radius:15px;background:#fff;color:#12212a}.form-grid{display:grid;gap:10px}.field label{display:block;margin-bottom:6px;font-size:11px;font-weight:900}.input{width:100%;min-height:45px;border-radius:11px;padding:9px 11px}
+.form-card{
+  padding:18px;
+  border-radius:24px;
+  background:#f8fbfb;
+  color:var(--ink);
+  border:1px solid rgba(226,236,239,.95);
+  box-shadow:0 22px 55px rgba(0,8,13,.22);
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+.field{min-width:0;}
+.field label{
+  display:block;
+  margin:0 0 7px;
+  color:#1b2b34;
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:-.02em;
+}
+.input{
+  width:100%;
+  min-height:54px;
+  border:1.5px solid #d2dde1;
+  border-radius:16px;
+  padding:13px 15px;
+  color:#13232c;
+  background:#fff;
+  outline:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.input::placeholder{color:#9aa8ae;}
+.input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(86,213,199,.20);
+}
+textarea.input{
+  min-height:96px;
+  resize:vertical;
+  line-height:1.35;
+}
+.field-wide{grid-column:1/-1;}
+@media (min-width:760px){
+  .form-grid{grid-template-columns:1fr 1fr;}
+}
