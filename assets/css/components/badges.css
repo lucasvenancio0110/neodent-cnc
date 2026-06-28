@@ -1,9 +1,24 @@
-.badge { display: inline-flex; align-items: center; min-height: 27px; border: 1px solid #e0e8eb; border-radius: 999px; padding: 4px 9px; color: #5d6f78; background: #f0f5f6; font-size: 11px; font-weight: 950; letter-spacing: .035em; text-transform: uppercase; }
-.badge.ok { color: var(--ok); background: var(--ok-bg); border-color: #c9eed7; }
-.badge.warn { color: var(--warn); background: var(--warn-bg); border-color: #ffe1a5; }
-.badge.bad { color: var(--bad); background: var(--bad-bg); border-color: #ffd0d4; }
-.badge.setup { color: #174a98; background: #eaf2ff; border-color: #cfe0ff; }
-.badge.ajuste { color: #9a5a08; background: #fff4df; border-color: #ffe1a5; }
-.badge.manut { color: #ad303b; background: #fff0f1; border-color: #ffd0d4; }
-.badge.apoio { color: #6b21a8; background: #f3e8ff; border-color: #e9d5ff; }
-.badge.obs { color: #455a64; background: #eef3f5; border-color: #d7e2e6; }
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:32px;
+  border:1px solid #e0e8eb;
+  border-radius:999px;
+  padding:6px 12px;
+  color:#5d6f78;
+  background:#f0f5f6;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.badge.ok{color:var(--ok);background:var(--ok-bg);border-color:#c9eed7;}
+.badge.warn{color:var(--warn);background:var(--warn-bg);border-color:#ffe1a5;}
+.badge.bad{color:var(--bad);background:var(--bad-bg);border-color:#ffd0d4;}
+.badge.setup{color:#174a98;background:#eaf2ff;border-color:#cfe0ff;}
+.badge.ajuste{color:#9a5a08;background:#fff4df;border-color:#ffe1a5;}
+.badge.manut{color:#ad303b;background:#fff0f1;border-color:#ffd0d4;}
+.badge.apoio{color:#6b21a8;background:#f3e8ff;border-color:#e9d5ff;}
+.badge.obs{color:#455a64;background:#eef3f5;border-color:#d7e2e6;}
