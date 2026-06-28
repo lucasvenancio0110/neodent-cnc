@@ -1,0 +1,1 @@
+Trigger GitHub Actions E2E test after secrets were configured.
