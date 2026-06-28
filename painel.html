@@ -1,2 +1,34 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Painel | Neodent CNC</title><link rel="stylesheet" href="./assets/css/global.css"><link rel="stylesheet" href="./assets/css/pages/painel.css"></head>
-<body><div class="app-shell"><main class="app-main app-grid"><section class="page-hero"><div class="eyebrow">Painel Geral</div><h1>Cards vivos da fábrica</h1><p>Visão do técnico/líder: setup, ajuste, manutenção, apoio, observações e concluídos.</p></section><section class="filter-row"><button class="filter-chip active">Todas</button><button class="filter-chip">Setup</button><button class="filter-chip">Ajuste</button><button class="filter-chip">Manutenção</button><button class="filter-chip">Apoio</button></section><section id="painelBoard" class="machine-board"><div class="empty-state">Carregando painel...</div></section></main></div><script type="module" src="./assets/js/pages/painel.js"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Painel | Neodent CNC</title>
+  <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/pages/painel.css">
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main app-grid">
+      <section class="page-hero painel-hero">
+        <div class="eyebrow">Painel da fábrica</div>
+        <h1>Cards vivos</h1>
+        <p>Setup, ajuste, manutenção, apoio e pendências por prioridade.</p>
+      </section>
+
+      <section id="panelMetrics" class="panel-metrics"></section>
+
+      <section class="filter-row">
+        <button class="filter-chip active" data-filter="TODAS">Todas</button>
+        <button class="filter-chip" data-filter="SETUP">Setup</button>
+        <button class="filter-chip" data-filter="AJUSTE">Ajuste</button>
+        <button class="filter-chip" data-filter="MANUTENCAO">Manutenção</button>
+        <button class="filter-chip" data-filter="APOIO">Apoio</button>
+      </section>
+
+      <section id="painelBoard" class="machine-board"><div class="empty-state">Carregando...</div></section>
+    </main>
+  </div>
+  <script type="module" src="./assets/js/pages/painel.js"></script>
+</body>
+</html>
