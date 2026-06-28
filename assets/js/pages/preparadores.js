@@ -1,1 +1,121 @@
-;
+import "../core/config.js";
+
+const API = window.NC_CONFIG.apiBase;
+const token = localStorage.getItem("nc_token");
+const user = JSON.parse(localStorage.getItem("nc_user") || "null");
+const form = document.getElementById("ocorrenciaForm");
+const msg = document.getElementById("ocorrenciaMsg");
+const board = document.getElementById("cardsRecentes");
+const countEl = document.getElementById("cardsCount");
+
+if (!token || !user) {
+  window.location.href = "login.html";
+}
+
+function show(text, bad = false) {
+  msg.textContent = text;
+  msg.style.color = bad ? "var(--bad)" : "var(--ok)";
+}
+
+async function api(path, options = {}) {
+  const res = await fetch(API + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+      ...(options.headers || {})
+    }
+  });
+
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new Error((data && data.error) || "Erro na API");
+  return data;
+}
+
+function statusClass(status) {
+  const s = String(status || "").toUpperCase();
+  if (s.includes("SETUP")) return "status-setup";
+  if (s.includes("AJUSTE")) return "status-ajuste";
+  if (s.includes("MANUT")) return "status-manutencao";
+  if (s.includes("APOIO")) return "status-apoio";
+  return "";
+}
+
+function badgeClass(status) {
+  const s = String(status || "").toUpperCase();
+  if (s.includes("SETUP")) return "setup";
+  if (s.includes("AJUSTE")) return "ajuste";
+  if (s.includes("MANUT")) return "manut";
+  if (s.includes("APOIO")) return "apoio";
+  return "obs";
+}
+
+function card(item) {
+  const tnl = String(item.tnl || "").padStart(3, "0");
+  const apoio = Number(item.precisa_apoio || 0) ? "Precisa apoio" : "Sem apoio";
+  const abertoPor = item.aberto_por || "Sistema";
+  const motivo = item.motivo || "Sem motivo";
+  const detalhe = item.detalhe || item.observacao || "Sem detalhe";
+  return `
+    <article class="machine-card ${statusClass(item.status)}">
+      <div class="machine-head">
+        <div class="machine-main">
+          <div class="machine-token">${tnl}</div>
+          <div class="machine-name">
+            <strong>TNL ${tnl}</strong>
+            <div class="machine-mini">
+              <span>${item.status || "STATUS"}</span>
+              <span>${item.celula || "Sem célula"}</span>
+              <span>${abertoPor}</span>
+            </div>
+          </div>
+        </div>
+        <span class="badge ${badgeClass(item.status)}">${apoio}</span>
+      </div>
+      <div class="machine-body">
+        <div class="machine-detail"><b>${motivo}</b><br>${detalhe}</div>
+      </div>
+    </article>
+  `;
+}
+
+async function loadCards() {
+  try {
+    const data = await api("/painel-geral");
+    const items = data.ocorrencias || [];
+    countEl.textContent = items.length;
+    board.innerHTML = items.length ? items.map(card).join("") : `<div class="empty-state">Nenhum card aberto.</div>`;
+  } catch (err) {
+    board.innerHTML = `<div class="empty-state">${err.message}</div>`;
+  }
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  show("Abrindo card...");
+
+  const button = form.querySelector("button[type='submit']");
+  button.disabled = true;
+  button.textContent = "Abrindo...";
+
+  const data = Object.fromEntries(new FormData(form).entries());
+  data.precisa_apoio = Number(data.precisa_apoio || 0);
+
+  try {
+    await api("/abrir-ocorrencia", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+
+    form.reset();
+    show("Card aberto com sucesso.");
+    await loadCards();
+  } catch (err) {
+    show(err.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Abrir card";
+  }
+});
+
+loadCards();
