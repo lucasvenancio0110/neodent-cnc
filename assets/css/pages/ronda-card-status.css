@@ -1,0 +1,80 @@
+/*
+  PADRÃO OPERACIONAL DOS CARDS DA RONDA
+
+  empty = sem leitura / ainda nem olharam -> apagado, cinza, foda-se por enquanto
+  ok    = estável / produzindo -> verde bem leve, baixa atenção
+  warn  = próximo turno / atenção -> amarelo, olhar depois
+  bad   = neste turno / crítico / setup vermelho / falta MP / manutenção -> vermelho, ação agora
+*/
+
+.machine-tile{
+  transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+}
+.machine-tile:active{transform:scale(.985);}
+
+.machine-tile.empty{
+  background:rgba(255,255,255,.055);
+  border-color:rgba(210,225,230,.16);
+  box-shadow:none;
+  color:#a9b8be;
+}
+.machine-tile.empty::before{background:#6e7c83;opacity:.55;}
+.machine-tile.empty strong{color:#c2cbd0;opacity:.72;}
+.machine-tile.empty span{color:#8d9ba2;}
+.machine-tile.empty em{color:#8d9ba2;opacity:.7;}
+
+.machine-tile.ok{
+  background:rgba(235,250,241,.72);
+  border-color:rgba(113,194,141,.25);
+  box-shadow:0 .45rem 1rem rgba(0,8,13,.09);
+}
+.machine-tile.ok::before{background:#35a96a;opacity:.75;}
+.machine-tile.ok strong{color:#197246;}
+.machine-tile.ok span{color:#4f6c5d;}
+.machine-tile.ok em{color:#197246;}
+
+.machine-tile.warn{
+  background:linear-gradient(145deg,#fffaf0,#fff6e6);
+  border-color:rgba(237,170,61,.44);
+  box-shadow:0 .7rem 1.4rem rgba(126,75,0,.10);
+}
+.machine-tile.warn::before{background:#edaa3d;}
+.machine-tile.warn strong{color:#9a5a08;}
+.machine-tile.warn span{color:#775c2e;}
+.machine-tile.warn em{color:#9a5a08;}
+
+.machine-tile.bad{
+  background:linear-gradient(145deg,#fff4f5,#fffafb);
+  border-color:rgba(224,79,90,.46);
+  box-shadow:0 .75rem 1.55rem rgba(173,48,59,.14);
+}
+.machine-tile.bad::before{background:#e04f5a;}
+.machine-tile.bad strong{color:#ad303b;}
+.machine-tile.bad span{color:#7c4048;}
+.machine-tile.bad em{color:#ad303b;}
+
+.machine-tile.bad em,
+.machine-tile.warn em{
+  border-radius:999px;
+  width:max-content;
+  max-width:100%;
+  padding:.18rem .44rem;
+}
+.machine-tile.bad em{background:rgba(224,79,90,.10);}
+.machine-tile.warn em{background:rgba(237,170,61,.13);}
+
+.ronda-summary>div:first-child{
+  background:rgba(255,255,255,.035);
+}
+.ronda-summary>div:first-child strong{
+  color:#b8c5ca;
+}
+.ronda-summary>div:nth-child(2) strong{
+  color:#ff7b86;
+}
+.ronda-summary>div:nth-child(3) strong{
+  color:#ffc466;
+}
+.ronda-summary>div:nth-child(4) strong{
+  color:#6fe0a0;
+}
