@@ -44,57 +44,56 @@ A resposta esperada contem:
 worker-v4-auth-neodent-cnc
 ```
 
-## 4. Criar primeiro admin
+## 4. Criar primeiro admin pelo app
 
-Depois execute uma chamada POST para:
+Abra a pagina:
+
+```txt
+bootstrap-admin.html
+```
+
+Preencha:
+
+```txt
+Nome
+Login
+Senha inicial
+```
+
+Essa tela chama a rota:
 
 ```txt
 /auth/bootstrap-admin
 ```
 
-Body exemplo:
-
-```json
-{
-  "nome": "Lucas Venancio",
-  "login": "lucas",
-  "senha": "trocar123"
-}
-```
-
-Essa rota so funciona enquanto nao existir nenhum ADMIN.
+Ela so funciona enquanto nao existir nenhum ADMIN no banco.
 
 ## 5. Login normal
 
-Depois use:
+Depois abra:
 
 ```txt
-/auth/login
+login.html
 ```
 
-Body exemplo:
+Entre com o login e senha criados no bootstrap.
 
-```json
-{
-  "login": "lucas",
-  "senha": "trocar123"
-}
-```
-
-A API retorna um token. As proximas chamadas usam:
-
-```txt
-Authorization: Bearer TOKEN_AQUI
-```
+A API retorna um token e o app salva no navegador.
 
 ## 6. Admin de usuarios
 
-Com token de ADMIN, use:
+Depois abra:
 
 ```txt
-GET /admin/usuarios
-POST /admin/usuarios
-PATCH /admin/usuarios/:id
+admin.html
+```
+
+Com usuario ADMIN, a tela consegue:
+
+```txt
+listar usuarios
+criar usuarios
+salvar funcao, linha e celula
 ```
 
 Funcoes oficiais:
