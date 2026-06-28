@@ -28,11 +28,8 @@ test.describe("Neodent CNC - fluxo principal", () => {
 
     await page.goto(`${BASE_URL}/preparadores.html`, { waitUntil: "networkidle" });
     await page.locator("input[name='tnl']").fill(tnl);
-    await page.locator("input[name='celula']").fill("Teste Robo");
-    await page.locator("select[name='status']").selectOption("AJUSTE");
     await page.locator("select[name='precisa_apoio']").selectOption("1");
     await page.locator("input[name='motivo']").fill(motivo);
-    await page.locator("select[name='prioridade']").selectOption("ALTA");
     await page.locator("textarea[name='detalhe']").fill(detalhe);
     await page.getByRole("button", { name: /abrir card/i }).click();
     await expect(page.getByText(/card aberto com sucesso/i)).toBeVisible();
