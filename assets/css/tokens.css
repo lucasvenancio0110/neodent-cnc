@@ -1,0 +1,37 @@
+:root {
+  --bg: #0b1117;
+  --bg-2: #111a22;
+  --panel: #121d26;
+  --panel-strong: #172630;
+  --panel-soft: rgba(255, 255, 255, .055);
+  --card: #f7f9fa;
+  --card-2: #ffffff;
+  --ink: #12212a;
+  --ink-2: #31434e;
+  --muted: #71818a;
+  --muted-light: #b5c3c9;
+  --line: #dce4e7;
+  --line-dark: rgba(207, 227, 233, .12);
+  --primary: #56d5c7;
+  --primary-2: #18a999;
+  --primary-3: #0b766c;
+  --blue: #3978e6;
+  --setup: #3978e6;
+  --ajuste: #f09a28;
+  --manut: #e04f5a;
+  --apoio: #a855f7;
+  --obs: #eef3f5;
+  --ok: #167647;
+  --ok-bg: #eaf7ef;
+  --warn: #9a5a08;
+  --warn-bg: #fff4df;
+  --bad: #ad303b;
+  --bad-bg: #fff0f1;
+  --neutral-bg: #eff3f4;
+  --radius-sm: 10px;
+  --radius: 15px;
+  --radius-lg: 21px;
+  --shadow: 0 14px 36px rgba(0, 8, 13, .18);
+  --shadow-strong: 0 24px 70px rgba(0, 8, 13, .30);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
