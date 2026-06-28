@@ -44,6 +44,7 @@ const decisionOriginalHtml = decisionBox.innerHTML;
 const mpPiecesWrap = document.getElementById("mpPiecesWrap");
 const mpMmWrap = document.getElementById("mpMmWrap");
 const projectionBox = document.getElementById("projectionBox");
+const stepDots = Array.from(document.querySelectorAll("#stepDots i"));
 
 let currentCelula = localStorage.getItem(CELL_KEY) || getCelulaFromUser(user);
 let currentStep = 1;
@@ -68,14 +69,15 @@ function setFieldValue(name, value) {
   const field = form.elements[name];
   if (!field) return;
   const radio = form.querySelector(`[name="${name}"][value="${value}"]`);
-  if (radio) {
-    radio.checked = true;
-    return;
-  }
+  if (radio) { radio.checked = true; return; }
   if (typeof field.value === "string") field.value = value ?? "";
 }
 
-function show(text, type = "") { msg.textContent = text; msg.className = `form-msg ${type}`.trim(); }
+function show(text, type = "") {
+  msg.textContent = text || "";
+  msg.className = `form-msg ${type}`.trim();
+}
+
 function currentTurnText() { const now = new Date(); return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`; }
 
 function getPayload() {
@@ -193,9 +195,9 @@ function renderMachines() {
   localCount.textContent = `${Object.keys(readings).length}/${machines.length}`;
   cardCount.textContent = String(Object.values(readings).filter((item) => item.cardGerado).length);
   renderSummary(readings, machines);
-  machineGrid.innerHTML = machines.map((machine) => {
+  machineGrid.innerHTML = machines.map((machine, index) => {
     const reading = readings[machine.id];
-    return `<button type="button" class="machine-tile ${machineTone(reading)}" data-machine-id="${machine.id}"><strong>${machine.tnl}</strong><span>${cardMeta(reading)}</span><em>${reading?.acaoLabel || "Tirar tempo"}</em></button>`;
+    return `<button type="button" class="machine-tile ${machineTone(reading)}" data-machine-id="${machine.id}" style="--tile-index:${index}"><strong>${machine.tnl}</strong><span>${cardMeta(reading)}</span><em>${reading?.acaoLabel || "Tirar tempo"}</em></button>`;
   }).join("");
 }
 
@@ -221,13 +223,14 @@ function renderProjection() {
 function setStep(step) {
   currentStep = Math.max(1, Math.min(4, step));
   form.querySelectorAll(".wizard-step").forEach((section) => { section.hidden = Number(section.dataset.step) !== currentStep; });
-  modalStepLabel.textContent = `Etapa ${currentStep} de 4`;
+  modalStepLabel.textContent = `${currentStep}/4`;
+  stepDots.forEach((dot, index) => dot.classList.toggle("active", index < currentStep));
   prevStepBtn.hidden = currentStep === 1;
   nextStepBtn.hidden = currentStep === 4;
   saveStepBtn.hidden = currentStep !== 4;
   if (currentStep === 3 || currentStep === 4) renderProjection();
   if (currentStep === 4 && latestCalc && !latestCalc.showDecision) {
-    decisionBox.innerHTML = `<div class="stable-save"><strong>Leitura estável</strong><span>Não precisa definir preset. Salve para marcar a máquina como lida.</span></div>`;
+    decisionBox.innerHTML = `<div class="stable-save"><strong>Estável</strong><span>Salve para marcar como lida.</span></div>`;
   } else if (!decisionBox.querySelector("[name='acao']")) {
     decisionBox.innerHTML = decisionOriginalHtml;
     renderProjection();
@@ -244,17 +247,17 @@ function openMachine(machineId) {
   form.elements.barrasInteiras.value = "0";
   if (reading?.payload) Object.entries(reading.payload).forEach(([key, value]) => setFieldValue(key, value));
   modalTitle.textContent = `TNL ${currentMachine.tnl}`;
-  modalSub.textContent = `${currentCelula} • patrimônio ${currentMachine.patrimonio || "--"}`;
+  modalSub.textContent = `${currentCelula.replace("CÉLULA ", "C")} • Pat. ${currentMachine.patrimonio || "--"}`;
   modal.hidden = false;
   document.body.classList.add("modal-open");
-  show("Preencha a leitura da máquina.");
+  show("");
   renderProjection();
   setStep(1);
   setTimeout(() => form.querySelector("[name='ciclo']")?.focus(), 120);
 }
 
 function closeModal() { modal.hidden = true; document.body.classList.remove("modal-open"); currentMachine = null; }
-function canAdvance() { if (currentStep === 1 && (!form.elements.ciclo.value || !form.elements.metaOp.value)) { show("Informe ciclo e meta da OP.", "bad"); return false; } if (currentStep === 2 && !form.elements.pecaMm.value) { show("Informe o comprimento da peça em mm.", "bad"); return false; } show("Continue a leitura."); return true; }
+function canAdvance() { if (currentStep === 1 && (!form.elements.ciclo.value || !form.elements.metaOp.value)) { show("Informe ciclo e meta.", "bad"); return false; } if (currentStep === 2 && !form.elements.pecaMm.value) { show("Informe peça mm.", "bad"); return false; } show(""); return true; }
 
 form.addEventListener("input", renderProjection);
 form.addEventListener("change", renderProjection);
@@ -271,20 +274,24 @@ form.addEventListener("submit", async (event) => {
   const payload = getPayload();
   const calc = calcRonda(payload, RONDA_DEFAULT_SETTINGS, new Date());
   if (!payload.tnl) return show("Máquina não encontrada.", "bad");
-  if (!calc.valid) return show("Complete os dados antes de salvar.", "bad");
+  if (!calc.valid) return show("Complete os dados.", "bad");
   const created = new Date();
   const machineId = currentMachine?.id || payload.tnl;
   const localItem = { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), machineId, celula: currentCelula, payload, calc: serializableCalc(calc), acaoLabel: calc.showDecision ? actionLabel(payload.acao) : "Leitura estável", tone: calc.showDecision ? actionTone(payload.acao) : calc.severity, cardGerado: false, createdAt: created.toISOString(), createdLabel: `${fmtDate(created)} ${fmtTime(created)}` };
   try {
-    if (calc.showDecision) { show("Salvando e gerando card vivo..."); await gerarCard(payload, calc); localItem.cardGerado = true; }
+    if (calc.showDecision) { show("Salvando...", "ok"); await gerarCard(payload, calc); localItem.cardGerado = true; }
     writeMachineReading(machineId, localItem);
     renderAll();
-    show(localItem.cardGerado ? "Leitura salva e card gerado." : "Leitura estável salva.", "ok");
-    setTimeout(closeModal, 550);
+    const updated = machineGrid.querySelector(`[data-machine-id="${machineId}"]`);
+    if (updated) updated.classList.add("just-updated");
+    show(localItem.cardGerado ? "Card gerado." : "Salvo.", "ok");
+    setTimeout(closeModal, 520);
   } catch (err) {
     writeMachineReading(machineId, localItem);
     renderAll();
-    show(`Salvou local, mas não gerou card: ${err.message}`, "bad");
+    const updated = machineGrid.querySelector(`[data-machine-id="${machineId}"]`);
+    if (updated) updated.classList.add("just-updated");
+    show(`Salvou local. Card falhou: ${err.message}`, "bad");
   }
 });
 
