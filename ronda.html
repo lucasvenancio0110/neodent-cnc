@@ -113,30 +113,31 @@
             </section>
           </section>
 
-          <section class="wizard-step" data-step="4" hidden>
-            <div class="step-title">
+          <section class="wizard-step decision-step" data-step="4" hidden>
+            <div class="step-title compact-title">
               <b>Decisão</b>
-              <span>Se vai encerrar, defina a próxima ação.</span>
+              <span>Escolha a sequência e confirme o preset.</span>
             </div>
-            <section id="decisionBox" class="decision-panel">
-              <h2>Próxima ação</h2>
-              <div class="action-grid">
-                <label><input type="radio" name="acao" value="sequencia" checked> Sequência</label>
-                <label><input type="radio" name="acao" value="setup_azul"> Setup azul</label>
-                <label><input type="radio" name="acao" value="setup_verde"> Setup verde</label>
-                <label><input type="radio" name="acao" value="setup_vermelho"> Setup vermelho</label>
-                <label><input type="radio" name="acao" value="falta_mp"> Falta MP</label>
-                <label><input type="radio" name="acao" value="manutencao"> Manutenção</label>
-                <label><input type="radio" name="acao" value="aguardando"> Aguardando</label>
-              </div>
+            <section id="decisionBox" class="decision-panel compact-decision">
+              <label class="full-label decision-select-wrap">
+                <span>Próxima ação</span>
+                <select name="acao" class="decision-select">
+                  <option value="sequencia">Sequência normal</option>
+                  <option value="setup_azul">Setup azul</option>
+                  <option value="setup_verde">Setup verde</option>
+                  <option value="setup_vermelho">Setup vermelho</option>
+                  <option value="falta_mp">Falta MP</option>
+                  <option value="manutencao">Manutenção</option>
+                  <option value="aguardando">Aguardando definição</option>
+                </select>
+              </label>
 
-              <h2>Preset</h2>
-              <div class="segmented">
+              <div class="preset-row segmented">
                 <label><input type="radio" name="preset" value="pendente" checked> Ainda não trouxe</label>
                 <label><input type="radio" name="preset" value="trouxe"> Preset já trouxe</label>
               </div>
 
-              <div class="quick-grid two">
+              <div class="quick-grid two decision-fields">
                 <label><span>Item próxima OP</span><input name="item" placeholder="327161"></label>
                 <label><span>Hora para solicitar</span><input name="horaSolicitar" id="horaSolicitar" readonly></label>
               </div>
