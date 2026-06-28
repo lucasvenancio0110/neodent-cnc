@@ -1,0 +1,297 @@
+/*
+  NEODENT CNC — DESIGN SYSTEM OPERACIONAL
+  Uma linguagem visual única para Ronda, Painel, Atividade, Setup, Histórico e Relatório.
+*/
+
+:root{
+  --op-setup:#3978e6;
+  --op-setup-soft:#eaf2ff;
+  --op-ajuste:#f59e0b;
+  --op-ajuste-soft:#fff6e6;
+  --op-manut:#e04f5a;
+  --op-manut-soft:#fff0f2;
+  --op-apoio:#9b5cf6;
+  --op-apoio-soft:#f3eaff;
+  --op-seq:#8aa0aa;
+  --op-seq-soft:#eef3f5;
+  --op-ok:#31a66a;
+  --op-ok-soft:rgba(235,250,241,.55);
+  --op-empty:rgba(255,255,255,.052);
+  --op-card-dark:#18232d;
+  --op-card-dark-2:#111b23;
+  --op-text-soft:#aebdc4;
+  --op-compact-radius:1.15rem;
+}
+
+.app-shell{
+  padding-bottom:calc(5.9rem + var(--safe-bottom));
+}
+
+.app-main{
+  width:min(44rem,100%);
+  padding:.8rem .75rem 1.35rem;
+  gap:.75rem;
+}
+
+.page-hero{
+  border-radius:1.25rem;
+  padding:.9rem 1rem;
+  background:linear-gradient(145deg,rgba(12,42,51,.92),rgba(8,24,35,.88));
+  box-shadow:0 .8rem 2rem rgba(0,7,12,.18);
+}
+
+.page-hero .eyebrow{
+  font-size:.72rem;
+  letter-spacing:.18em;
+}
+
+.page-hero h1{
+  margin:.28rem 0 0;
+  font-size:clamp(1.55rem,1.25rem + 1vw,2.15rem);
+  line-height:1;
+}
+
+.page-hero p{
+  margin:.34rem 0 0;
+  font-size:.92rem;
+  line-height:1.28;
+  color:#b8c6cc;
+  max-width:34rem;
+}
+
+.portal-grid{
+  display:grid;
+  gap:.65rem;
+}
+
+.portal-card{
+  min-height:5.8rem;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:1.15rem;
+  padding:.82rem .9rem;
+  background:rgba(255,255,255,.055);
+  display:grid;
+  grid-template-columns:2rem minmax(0,1fr);
+  gap:.72rem;
+  align-items:center;
+  box-shadow:0 .65rem 1.4rem rgba(0,7,12,.14);
+}
+
+.portal-card b{
+  font-size:1.35rem;
+  line-height:1;
+}
+
+.portal-card strong{
+  display:block;
+  font-size:1.08rem;
+  letter-spacing:-.045em;
+}
+
+.portal-card span{
+  display:block;
+  margin-top:.2rem;
+  color:#b9c7cd;
+  font-size:.82rem;
+  font-weight:800;
+  line-height:1.25;
+}
+
+.form-card{
+  padding:1rem;
+  border-radius:1.25rem;
+}
+
+.form-grid{
+  gap:.75rem;
+}
+
+.field label{
+  font-size:.75rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.input{
+  min-height:3rem;
+  border-radius:.95rem;
+  padding:.66rem .8rem;
+  font-size:1rem;
+}
+
+textarea.input{
+  min-height:5rem;
+}
+
+.metric-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.6rem;
+}
+
+.metric{
+  border:1px solid rgba(117,226,213,.12);
+  border-radius:1.05rem;
+  padding:.75rem .85rem;
+  background:rgba(12,42,51,.72);
+}
+
+.metric span{
+  display:block;
+  color:#a8bac1;
+  font-size:.68rem;
+  font-weight:1000;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.metric strong{
+  display:block;
+  margin-top:.2rem;
+  color:#fff;
+  font-size:1.45rem;
+  line-height:1;
+  letter-spacing:-.05em;
+}
+
+.section-title{
+  margin:.75rem 0 .4rem;
+}
+
+.empty-state{
+  padding:.85rem;
+  border-radius:1rem;
+  font-size:.95rem;
+  color:#b9c8ce;
+}
+
+.machine-board{
+  display:grid;
+  gap:.75rem;
+}
+
+.machine-card{
+  border-radius:1.25rem;
+  box-shadow:0 .8rem 1.8rem rgba(0,7,12,.18);
+}
+
+.machine-card::before{
+  width:.32rem;
+  opacity:.95;
+}
+
+.machine-card.status-setup::before{background:var(--op-setup);}
+.machine-card.status-ajuste::before{background:var(--op-ajuste);}
+.machine-card.status-manutencao::before{background:var(--op-manut);}
+.machine-card.status-apoio::before{background:var(--op-apoio);}
+.machine-card.status-observacao::before{background:var(--op-seq);}
+
+.machine-head{
+  padding:.85rem .9rem .75rem 1.05rem;
+  gap:.55rem;
+}
+
+.machine-main{
+  grid-template-columns:3.15rem minmax(0,1fr);
+  gap:.75rem;
+}
+
+.machine-token{
+  width:3.15rem;
+  height:3.15rem;
+  border-radius:1rem;
+  font-size:1.25rem;
+}
+
+.machine-card.status-setup .machine-token{color:#1f5fc9;background:var(--op-setup-soft);border-color:#cfe0ff;}
+.machine-card.status-ajuste .machine-token{color:#a45d00;background:var(--op-ajuste-soft);border-color:#ffe1a6;}
+.machine-card.status-manutencao .machine-token{color:#ad303b;background:var(--op-manut-soft);border-color:#ffcbd0;}
+.machine-card.status-apoio .machine-token{color:#6f35c7;background:var(--op-apoio-soft);border-color:#e4d0ff;}
+
+.machine-name strong{
+  font-size:1.28rem;
+}
+
+.machine-mini{
+  gap:.45rem;
+  margin-top:.34rem;
+}
+
+.machine-mini span{
+  font-size:.72rem;
+  letter-spacing:.04em;
+}
+
+.machine-head .badge{
+  margin-left:3.9rem;
+  min-height:2rem;
+  padding:.32rem .7rem;
+  font-size:.72rem;
+}
+
+.machine-body{
+  padding:.75rem .9rem .95rem 1.05rem;
+  gap:.65rem;
+}
+
+.machine-detail{
+  border-radius:1rem;
+  padding:.75rem .85rem;
+  font-size:.9rem;
+  line-height:1.32;
+}
+
+.machine-detail b{
+  font-size:1rem;
+  margin-bottom:.25rem;
+}
+
+.machine-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.55rem;
+}
+
+.machine-actions .btn{
+  min-height:2.85rem;
+  border-radius:.95rem;
+  font-size:.86rem;
+}
+
+.badge.setup{color:#1f5fc9;background:var(--op-setup-soft);border-color:#cfe0ff;}
+.badge.ajuste{color:#a45d00;background:var(--op-ajuste-soft);border-color:#ffe1a6;}
+.badge.manut{color:#ad303b;background:var(--op-manut-soft);border-color:#ffcbd0;}
+.badge.apoio{color:#6f35c7;background:var(--op-apoio-soft);border-color:#e4d0ff;}
+.badge.obs{color:#60727b;background:var(--op-seq-soft);border-color:#d6e0e4;}
+
+.filter-row{
+  display:flex;
+  gap:.55rem;
+  overflow-x:auto;
+  padding:.05rem 0 .35rem;
+  scrollbar-width:none;
+}
+.filter-row::-webkit-scrollbar{display:none;}
+.filter-chip{
+  min-height:2.8rem;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  padding:0 .95rem;
+  color:#dce8ec;
+  background:rgba(255,255,255,.075);
+  font-size:.9rem;
+  font-weight:950;
+  white-space:nowrap;
+}
+.filter-chip.active{
+  color:#062824;
+  background:var(--primary);
+  border-color:var(--primary);
+  box-shadow:0 .7rem 1.4rem rgba(86,213,199,.20);
+}
+
+@media(max-width:27rem){
+  .app-main{padding-left:.65rem;padding-right:.65rem;}
+  .page-hero p{display:none;}
+  .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .machine-head .badge{margin-left:0;}
+}
