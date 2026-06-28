@@ -1,126 +1,28 @@
 /* Movimento leve, funcional, sem enfeite inútil. */
-:root{
-  --motion-fast:160ms;
-  --motion-med:240ms;
-  --motion-slow:360ms;
-  --ease-out:cubic-bezier(.2,.8,.2,1);
-  --ease-spring:cubic-bezier(.2,1.1,.22,1);
-}
+:root{--motion-fast:160ms;--motion-med:240ms;--motion-slow:360ms;--ease-out:cubic-bezier(.2,.8,.2,1);--ease-spring:cubic-bezier(.2,1.1,.22,1)}
 
-.ronda-topbar,
-.ronda-status>div,
-.cell-picker,
-.ronda-summary>div{
-  animation:softEnter var(--motion-med) var(--ease-out) both;
-}
+.ronda-topbar,.ronda-status>div,.cell-picker,.ronda-summary>div{animation:softEnter var(--motion-med) var(--ease-out) both}
+.machine-tile{animation:tileEnter var(--motion-med) var(--ease-out) both;animation-delay:calc(var(--tile-index, 0) * 18ms);will-change:transform,opacity}.machine-tile:hover{transform:translateY(-1px)}.machine-tile:focus-visible{outline:3px solid rgba(86,213,199,.55);outline-offset:2px}.machine-tile.just-updated{animation:savePop 520ms var(--ease-spring) both}
 
-.machine-tile{
-  animation:tileEnter var(--motion-med) var(--ease-out) both;
-  animation-delay:calc(var(--tile-index, 0) * 18ms);
-  will-change:transform,opacity;
-}
-.machine-tile:hover{transform:translateY(-1px);}
-.machine-tile:focus-visible{
-  outline:3px solid rgba(86,213,199,.55);
-  outline-offset:2px;
-}
-.machine-tile.just-updated{
-  animation:savePop 520ms var(--ease-spring) both;
-}
+/* Modal central e menor: vira ferramenta rápida, não formulário gigante. */
+.modal-backdrop{background:rgba(0,0,0,.58);backdrop-filter:blur(.45rem)}
+.modal-sheet{left:50%!important;right:auto!important;top:50%!important;bottom:auto!important;width:min(27rem,calc(100vw - 1rem));max-height:calc(100dvh - 6rem);border-radius:1.35rem!important;transform:translate(-50%,-50%);box-shadow:0 1.25rem 4rem rgba(0,0,0,.42)!important}
+.machine-modal:not([hidden]) .modal-backdrop{animation:fadeIn var(--motion-fast) ease both}.machine-modal:not([hidden]) .modal-sheet{animation:sheetCenter var(--motion-med) var(--ease-spring) both}.wizard-step:not([hidden]){animation:stepIn var(--motion-med) var(--ease-out) both}
+.modal-head{padding:.7rem .85rem!important}.modal-head span{font-size:.66rem!important}.modal-head strong{font-size:1.45rem!important}.modal-head small{font-size:.78rem!important;opacity:.78}.modal-close{width:2.35rem!important;height:2.35rem!important;border-radius:.8rem!important;font-size:1.35rem!important}.wizard-step{min-height:0!important;max-height:calc(100dvh - 17rem)!important;padding:.65rem 0!important}.step-title{padding:0 .85rem .35rem!important}.step-title b{font-size:1rem!important}.step-title span{display:none}.quick-grid{gap:.55rem!important;padding:.5rem .85rem 0!important}.full-label{padding:.5rem .85rem 0!important}input,select{min-height:2.65rem!important;border-radius:.82rem!important;padding:.55rem .7rem!important}.segmented,.action-grid{gap:.42rem!important;padding:0 .85rem!important}.segmented label,.action-grid label{min-height:2.55rem!important;padding:.35rem .55rem!important;font-size:.8rem!important}.bar-row{margin:.5rem .85rem 0!important;grid-template-columns:minmax(0,1fr) 2.65rem 2.65rem!important;gap:.45rem!important}.step-btn{min-height:2.65rem!important;border-radius:.82rem!important}.projection{margin:.25rem .85rem 0!important;border-radius:1rem!important}.projection-top{padding:.65rem!important}.projection-top strong{font-size:1.25rem!important}.projection-grid>div,.projection-stats>div{padding:.55rem .65rem!important}.modal-actions{padding:.55rem .85rem .25rem!important;gap:.45rem!important}.main-action,.secondary-action{min-height:2.7rem!important;border-radius:.86rem!important}.form-msg{display:none;margin:.3rem .85rem .6rem!important;padding:.5rem!important;font-size:.78rem!important}
 
-.machine-modal:not([hidden]) .modal-backdrop{animation:fadeIn var(--motion-fast) ease both;}
-.machine-modal:not([hidden]) .modal-sheet{animation:sheetUp var(--motion-med) var(--ease-spring) both;}
-.wizard-step:not([hidden]){animation:stepIn var(--motion-med) var(--ease-out) both;}
+.step-dots{display:grid;grid-template-columns:repeat(4,1fr);gap:.24rem;padding:.35rem .85rem 0;background:#fff}.step-dots i{height:.2rem;border-radius:999px;background:#dce7ea;transform-origin:left center;transition:background var(--motion-fast), transform var(--motion-fast)}.step-dots i.active{background:var(--r-primary-dark);transform:scaleY(1.45)}
+.form-msg.ok,.form-msg.bad{display:block;animation:softEnter var(--motion-med) var(--ease-out) both}.main-action,.secondary-action,.top-link,.mini-btn,.modal-close,.step-btn{transition:transform var(--motion-fast) var(--ease-out),filter var(--motion-fast),background var(--motion-fast),border-color var(--motion-fast)}.main-action:active,.secondary-action:active,.top-link:active,.mini-btn:active,.modal-close:active,.step-btn:active{transform:scale(.97)}.main-action:disabled,.secondary-action:disabled{filter:saturate(.75);opacity:.55}
+.projection.bad .projection-top{animation:criticalPulse 1200ms ease-in-out infinite alternate}.projection.warn .projection-top{animation:warnGlow 1400ms ease-in-out infinite alternate}.projection.ok .projection-top{animation:none}
 
-.step-dots{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:.28rem;
-  padding:.45rem 1rem 0;
-  background:#fff;
-}
-.step-dots i{
-  height:.22rem;
-  border-radius:999px;
-  background:#dce7ea;
-  transform-origin:left center;
-  transition:background var(--motion-fast), transform var(--motion-fast);
-}
-.step-dots i.active{
-  background:var(--r-primary-dark);
-  transform:scaleY(1.45);
-}
+@keyframes softEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tileEnter{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetCenter{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes stepIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes savePop{0%{transform:scale(.98);box-shadow:0 .4rem 1rem rgba(0,8,13,.12)}45%{transform:scale(1.025);box-shadow:0 1rem 2rem rgba(86,213,199,.22)}100%{transform:scale(1)}}
+@keyframes criticalPulse{from{box-shadow:inset .34rem 0 0 #e04f5a}to{box-shadow:inset .34rem 0 0 #e04f5a,0 0 0 .2rem rgba(224,79,90,.08)}}
+@keyframes warnGlow{from{box-shadow:inset .34rem 0 0 #edaa3d}to{box-shadow:inset .34rem 0 0 #edaa3d,0 0 0 .18rem rgba(237,170,61,.10)}}
 
-.form-msg{
-  display:none;
-  margin-top:.3rem;
-}
-.form-msg.ok,.form-msg.bad{
-  display:block;
-  animation:softEnter var(--motion-med) var(--ease-out) both;
-}
-
-.main-action,.secondary-action,.top-link,.mini-btn,.modal-close,.step-btn{
-  transition:transform var(--motion-fast) var(--ease-out), filter var(--motion-fast), background var(--motion-fast), border-color var(--motion-fast);
-}
-.main-action:active,.secondary-action:active,.top-link:active,.mini-btn:active,.modal-close:active,.step-btn:active{
-  transform:scale(.97);
-}
-.main-action:disabled,.secondary-action:disabled{filter:saturate(.75);opacity:.55;}
-
-.projection.bad .projection-top{animation:criticalPulse 1200ms ease-in-out infinite alternate;}
-.projection.warn .projection-top{animation:warnGlow 1400ms ease-in-out infinite alternate;}
-.projection.ok .projection-top{animation:none;}
-
-.step-title{
-  padding-bottom:.25rem;
-}
-.step-title span{
-  display:none;
-}
-.modal-head small{
-  opacity:.8;
-}
-
-@keyframes softEnter{
-  from{opacity:0;transform:translateY(6px);}
-  to{opacity:1;transform:translateY(0);}
-}
-@keyframes tileEnter{
-  from{opacity:0;transform:translateY(10px) scale(.985);}
-  to{opacity:1;transform:translateY(0) scale(1);}
-}
-@keyframes fadeIn{
-  from{opacity:0;}
-  to{opacity:1;}
-}
-@keyframes sheetUp{
-  from{opacity:0;transform:translateY(26px) scale(.985);}
-  to{opacity:1;transform:translateY(0) scale(1);}
-}
-@keyframes stepIn{
-  from{opacity:0;transform:translateX(12px);}
-  to{opacity:1;transform:translateX(0);}
-}
-@keyframes savePop{
-  0%{transform:scale(.98);box-shadow:0 .4rem 1rem rgba(0,8,13,.12);}
-  45%{transform:scale(1.025);box-shadow:0 1rem 2rem rgba(86,213,199,.22);}
-  100%{transform:scale(1);}
-}
-@keyframes criticalPulse{
-  from{box-shadow:inset .34rem 0 0 #e04f5a;}
-  to{box-shadow:inset .34rem 0 0 #e04f5a,0 0 0 .2rem rgba(224,79,90,.08);}
-}
-@keyframes warnGlow{
-  from{box-shadow:inset .34rem 0 0 #edaa3d;}
-  to{box-shadow:inset .34rem 0 0 #edaa3d,0 0 0 .18rem rgba(237,170,61,.10);}
-}
-
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{
-    animation-duration:.001ms!important;
-    animation-iteration-count:1!important;
-    transition-duration:.001ms!important;
-    scroll-behavior:auto!important;
-  }
-}
+@media(max-height:720px){.modal-sheet{max-height:calc(100dvh - 4.6rem)}.wizard-step{max-height:calc(100dvh - 15.5rem)!important}.modal-head{padding:.55rem .75rem!important}.step-dots{padding-top:.25rem}.projection-grid,.projection-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}.projection-grid>div:last-child{grid-column:auto!important;border-top:0!important}}
+@media(max-width:27rem){.modal-sheet{width:calc(100vw - .75rem)}.decision-fields.quick-grid.two{grid-template-columns:1fr 1fr!important}.preset-row.segmented{grid-template-columns:1fr 1fr!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
