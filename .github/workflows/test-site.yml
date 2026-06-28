@@ -1,0 +1,51 @@
+name: Testar site Neodent CNC
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "**/*.html"
+      - "assets/**"
+      - "tests/**"
+      - "playwright.config.js"
+      - "package.json"
+      - ".github/workflows/test-site.yml"
+
+jobs:
+  e2e:
+    name: Abrir site, testar fluxo e tirar prints
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Instalar navegador Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Rodar teste do site real
+        run: npm run test:e2e
+        env:
+          NC_BASE_URL: https://lucasvenancio0110.github.io/neodent-cnc
+          NC_API_URL: https://neodent-cnc-api.lucassantanals0110.workers.dev
+          NC_LOGIN: ${{ secrets.NC_LOGIN }}
+          NC_PASSWORD: ${{ secrets.NC_PASSWORD }}
+
+      - name: Salvar prints e relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: neodent-cnc-e2e-prints
+          path: |
+            test-results/**
+            playwright-report/**
+          if-no-files-found: ignore
