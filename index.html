@@ -1,19 +1,49 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Portal | Neodent CNC</title>
-  <link rel="stylesheet" href="./assets/css/global.css"><link rel="stylesheet" href="./assets/css/pages/index.css">
+  <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/pages/ronda.css">
+  <link rel="stylesheet" href="./assets/css/pages/index.css">
 </head>
-<body><div class="app-shell"><main class="app-main app-grid">
-  <section class="page-hero"><div class="eyebrow">Cockpit Operacional</div><h1>Neodent CNC</h1><p>Painel vivo da linha, alimentado pela ronda do preparador.</p></section>
-  <section class="portal-grid">
-    <a class="portal-card" href="./ronda.html"><b>⏱</b><strong>Ronda</strong><span>Tirar tempo, prever encerramento e gerar card vivo.</span></a>
-    <a class="portal-card" href="./painel.html"><b>▦</b><strong>Painel Vivo</strong><span>Máquinas abertas em formato compacto de fábrica.</span></a>
-    <a class="portal-card" href="./apoio.html"><b>●</b><strong>Tempo Real</strong><span>Fila viva de atualizações, setup, ajuste, apoio e observações.</span></a>
-    <a class="portal-card" href="./setup.html"><b>✓</b><strong>Liberar Setup</strong><span>Registrar item, ciclo 100% e responsável.</span></a>
-    <a class="portal-card" href="./historico.html"><b>⌕</b><strong>Histórico</strong><span>Linha do tempo por TNL, item, evento e responsável.</span></a>
-    <a class="portal-card" href="./relatorio.html"><b>☰</b><strong>Relatório</strong><span>Saída automática a partir dos cards e eventos.</span></a>
-    <a class="portal-card" href="./admin.html"><b>⚿</b><strong>Admin</strong><span>Usuários, senhas, funções e permissões.</span></a>
-  </section>
-</main></div><script type="module" src="./assets/js/pages/index.js"></script></body></html>
+<body>
+  <div class="ronda-app portal-app">
+    <header class="ronda-topbar">
+      <div>
+        <span class="top-kicker">Cockpit</span>
+        <strong>Neodent CNC</strong>
+        <small>VENANC Tools</small>
+      </div>
+      <a href="./ronda.html" class="top-link">Ronda</a>
+    </header>
+
+    <main class="ronda-main portal-main">
+      <section class="portal-kpis">
+        <div><span>Entrada</span><strong>App</strong></div>
+        <div><span>Modo</span><strong>Fábrica</strong></div>
+      </section>
+
+      <section class="portal-grid compact-menu">
+        <a class="portal-card primary" href="./ronda.html"><b>⏱</b><div><strong>Ronda</strong><span>Células e leitura</span></div></a>
+        <a class="portal-card" href="./painel.html"><b>▦</b><div><strong>Painel</strong><span>Cards da fábrica</span></div></a>
+        <a class="portal-card live" href="./apoio.html"><b>●</b><div><strong>Tempo</strong><span>Linha viva</span></div></a>
+        <a class="portal-card setup" href="./setup.html"><b>✓</b><div><strong>Setup</strong><span>Liberar ciclo 100%</span></div></a>
+        <a class="portal-card" href="./historico.html"><b>⌕</b><div><strong>Histórico</strong><span>Consulta por TNL</span></div></a>
+        <a class="portal-card" href="./relatorio.html"><b>☰</b><div><strong>Relatório</strong><span>Saída do turno</span></div></a>
+        <a class="portal-card admin" href="./admin.html"><b>⚿</b><div><strong>Admin</strong><span>Usuários</span></div></a>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <a href="./ronda.html">Ronda</a>
+      <a href="./painel.html">Painel</a>
+      <a href="./apoio.html">Tempo</a>
+      <a href="./setup.html">Setup</a>
+      <a class="active" href="./index.html">Mais</a>
+    </nav>
+  </div>
+  <script type="module" src="./assets/js/pages/index.js"></script>
+</body>
+</html>
