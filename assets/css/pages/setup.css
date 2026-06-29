@@ -1,1 +1,10 @@
-/* Estilos específicos do setup. */
+body{background:linear-gradient(145deg,#071017,#101923 72%);color:#f7fbfc;}
+.compact-form{padding:.85rem;border-radius:1.15rem;background:#f8fbfb;}
+.compact-form .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;}
+.compact-form .field{display:grid;gap:.2rem;}
+.compact-form textarea.input{min-height:4.2rem;}
+.compact-form .action-row{display:grid;grid-template-columns:1.3fr 1fr;gap:.55rem;margin-top:.65rem;}
+.compact-form .btn{min-height:2.8rem;border-radius:.9rem;}
+#setupMsg{padding:.65rem .8rem;text-align:left;}
+.section-title{display:flex;align-items:center;justify-content:space-between;color:#fff;}
+@media(max-width:27rem){.compact-form .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.compact-form .input{min-height:2.7rem;}.compact-form .field label{font-size:.68rem;}.compact-form .action-row{grid-template-columns:1fr 1fr;}}
