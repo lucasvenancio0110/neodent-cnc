@@ -12,148 +12,54 @@
 <body>
   <div class="ronda-app">
     <header class="ronda-topbar">
-      <div>
-        <span class="top-kicker">Ronda</span>
-        <strong id="tituloCelula">Célula</strong>
-        <small id="turnoAtual">--</small>
-      </div>
+      <div><span class="top-kicker">Ronda</span><strong id="tituloCelula">Célula</strong><small id="turnoAtual">--</small></div>
       <a href="./painel.html" class="top-link">Painel</a>
     </header>
-
     <main class="ronda-main">
-      <section class="ronda-status compact">
-        <div><span>Agora</span><strong id="clockNow">--:--</strong></div>
-        <div><span>Lidas</span><strong id="localCount">0/0</strong></div>
-        <div><span>Cards</span><strong id="cardCount">0</strong></div>
-      </section>
-
-      <section class="cell-picker" aria-label="Selecionar célula">
-        <select id="celulaSelect" class="cell-select"></select>
-        <button id="resetRondaBtn" type="button" class="mini-btn">Limpar</button>
-      </section>
-
+      <section class="ronda-status compact"><div><span>Agora</span><strong id="clockNow">--:--</strong></div><div><span>Lidas</span><strong id="localCount">0/0</strong></div><div><span>Cards</span><strong id="cardCount">0</strong></div></section>
+      <section class="cell-picker" aria-label="Selecionar célula"><select id="celulaSelect" class="cell-select"></select><button id="resetRondaBtn" type="button" class="mini-btn">Limpar</button></section>
       <section class="ronda-summary" id="rondaSummary"></section>
       <section class="machine-grid" id="machineGrid"></section>
     </main>
-
     <div id="machineModal" class="machine-modal" hidden>
       <div class="modal-backdrop" data-close-modal></div>
       <section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <header class="modal-head">
-          <div>
-            <span id="modalStepLabel">1/4</span>
-            <strong id="modalTitle">TNL</strong>
-            <small id="modalSub">--</small>
-          </div>
-          <button type="button" class="modal-close" data-close-modal>×</button>
-        </header>
-        <div id="stepDots" class="step-dots" aria-hidden="true">
-          <i></i><i></i><i></i><i></i>
-        </div>
-
+        <header class="modal-head"><div><span id="modalStepLabel">1/4</span><strong id="modalTitle">TNL</strong><small id="modalSub">--</small></div><button type="button" class="modal-close" data-close-modal>×</button></header>
+        <div id="stepDots" class="step-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <form id="rondaForm" class="modal-form">
           <input name="tnl" type="hidden">
-
           <section class="wizard-step" data-step="1">
             <div class="step-title"><b>OP</b></div>
-            <div class="quick-grid two">
-              <label><span>Ciclo</span><input name="ciclo" inputmode="decimal" placeholder="7,27" required></label>
-              <label><span>Meta</span><input name="metaOp" type="number" min="0" step="1" placeholder="665" required></label>
-            </div>
+            <div class="quick-grid two"><label><span>Ciclo</span><input name="ciclo" inputmode="decimal" placeholder="7,27" required></label><label><span>Meta</span><input name="metaOp" type="number" min="0" step="1" placeholder="665" required></label></div>
             <label class="full-label"><span>Produzidas <em>opcional</em></span><input name="produzidas" type="number" min="0" step="1" placeholder="0"></label>
           </section>
-
           <section class="wizard-step" data-step="2" hidden>
             <div class="step-title"><b>MP</b></div>
-            <div class="segmented" role="radiogroup" aria-label="Matéria-prima">
-              <label><input type="radio" name="mpModo" value="pieces" checked> Peças</label>
-              <label><input type="radio" name="mpModo" value="partialMm"> Parcial mm</label>
-              <label><input type="radio" name="mpModo" value="full"> Barra cheia</label>
-            </div>
-
-            <div id="mpPiecesWrap" class="quick-grid">
-              <label><span>Peças na barra</span><input name="pecasRestantes" type="number" min="0" step="1" placeholder="33"></label>
-            </div>
-            <div id="mpMmWrap" class="quick-grid hidden">
-              <label><span>mm restantes</span><input name="parcialMm" type="number" min="0" step="0.01" placeholder="1360"></label>
-            </div>
-
-            <div class="bar-row">
-              <label><span>Barras</span><input name="barrasInteiras" type="number" min="0" step="1" value="0"></label>
-              <button type="button" class="step-btn" data-step-change="-1">−</button>
-              <button type="button" class="step-btn" data-step-change="1">+</button>
-            </div>
-
+            <div class="segmented" role="radiogroup" aria-label="Matéria-prima"><label><input type="radio" name="mpModo" value="pieces" checked> Peças</label><label><input type="radio" name="mpModo" value="partialMm"> Parcial mm</label><label><input type="radio" name="mpModo" value="full"> Barra cheia</label></div>
+            <div id="mpPiecesWrap" class="quick-grid"><label><span>Peças na barra</span><input name="pecasRestantes" type="number" min="0" step="1" placeholder="33"></label></div>
+            <div id="mpMmWrap" class="quick-grid hidden"><label><span>mm restantes</span><input name="parcialMm" type="number" min="0" step="0.01" placeholder="1360"></label></div>
+            <div class="bar-row"><label><span>Barras</span><input name="barrasInteiras" type="number" min="0" step="1" value="0"></label><button type="button" class="step-btn" data-step-change="-1">−</button><button type="button" class="step-btn" data-step-change="1">+</button></div>
             <label class="full-label"><span>Peça mm</span><input name="pecaMm" type="number" min="0" step="0.01" placeholder="20" required></label>
           </section>
-
           <section class="wizard-step" data-step="3" hidden>
             <div class="step-title"><b>Resultado</b></div>
-            <section id="projectionBox" class="projection idle">
-              <div class="projection-top">
-                <span>Projeção</span>
-                <strong id="projectionTitle">Aguardando dados</strong>
-              </div>
-              <div class="projection-grid">
-                <div><span>Fim</span><strong id="projectionEnd">--:--</strong></div>
-                <div><span>Resta</span><strong id="projectionRest">-</strong></div>
-                <div><span>Motivo</span><strong id="projectionReason">-</strong></div>
-              </div>
-              <div class="projection-stats">
-                <div><span>Saldo</span><strong id="projectionSaldo">0</strong></div>
-                <div><span>MP</span><strong id="projectionMp">0</strong></div>
-                <div><span>Barra</span><strong id="projectionPerBar">0</strong></div>
-              </div>
-            </section>
+            <section id="projectionBox" class="projection idle"><div class="projection-top"><span>Projeção</span><strong id="projectionTitle">Aguardando dados</strong></div><div class="projection-grid"><div><span>Fim</span><strong id="projectionEnd">--:--</strong></div><div><span>Resta</span><strong id="projectionRest">-</strong></div><div><span>Motivo</span><strong id="projectionReason">-</strong></div></div><div class="projection-stats"><div><span>Saldo</span><strong id="projectionSaldo">0</strong></div><div><span>MP</span><strong id="projectionMp">0</strong></div><div><span>Barra</span><strong id="projectionPerBar">0</strong></div></div></section>
           </section>
-
           <section class="wizard-step decision-step" data-step="4" hidden>
             <div class="step-title compact-title"><b>Decisão</b></div>
             <section id="decisionBox" class="decision-panel compact-decision">
-              <label class="full-label decision-select-wrap">
-                <span>Próxima ação</span>
-                <select name="acao" class="decision-select">
-                  <option value="sequencia">Sequência normal</option>
-                  <option value="setup_azul">Setup azul</option>
-                  <option value="setup_verde">Setup verde</option>
-                  <option value="setup_vermelho">Setup vermelho</option>
-                  <option value="falta_mp">Falta MP</option>
-                  <option value="manutencao">Manutenção</option>
-                  <option value="aguardando">Aguardando definição</option>
-                </select>
-              </label>
-
-              <div class="preset-row segmented">
-                <label><input type="radio" name="preset" value="pendente" checked> Não trouxe</label>
-                <label><input type="radio" name="preset" value="trouxe"> Já trouxe</label>
-              </div>
-
-              <div class="quick-grid two decision-fields">
-                <label><span>Item</span><input name="item" placeholder="327161"></label>
-                <label><span>Solicitar</span><input name="horaSolicitar" id="horaSolicitar" readonly></label>
-              </div>
+              <label class="full-label decision-select-wrap"><span>Próxima ação</span><select name="acao" class="decision-select"><option value="sequencia">Sequência normal</option><option value="setup_azul">🔵 Setup azul</option><option value="setup_verde">🟢 Setup verde</option><option value="setup_vermelho">🔴 Setup vermelho</option><option value="falta_mp">Falta MP</option><option value="manutencao">Manutenção</option><option value="aguardando">Aguardando definição</option></select></label>
+              <div class="preset-row segmented"><label><input type="radio" name="preset" value="pendente" checked> Não trouxe</label><label><input type="radio" name="preset" value="trouxe"> Já trouxe</label></div>
+              <div class="quick-grid two decision-fields"><label><span>Item</span><input name="item" placeholder="327161"></label><label><span>Solicitar</span><input name="horaSolicitar" id="horaSolicitar" readonly></label></div>
             </section>
           </section>
-
-          <footer class="modal-actions">
-            <button type="button" id="prevStepBtn" class="secondary-action">Voltar</button>
-            <button type="button" id="nextStepBtn" class="main-action">Próximo</button>
-            <button type="submit" id="saveStepBtn" class="main-action" hidden>Salvar</button>
-          </footer>
+          <footer class="modal-actions"><button type="button" id="prevStepBtn" class="secondary-action">Voltar</button><button type="button" id="nextStepBtn" class="main-action">Próximo</button><button type="submit" id="saveStepBtn" class="main-action" hidden>Salvar</button></footer>
           <p id="formMsg" class="form-msg"></p>
         </form>
       </section>
     </div>
-
-    <nav class="bottom-nav">
-      <a class="active" href="./ronda.html">Ronda</a>
-      <a href="./painel.html">Painel</a>
-      <a href="./apoio.html">Atividade</a>
-      <a href="./setup.html">Setup</a>
-      <a href="./index.html">Mais</a>
-    </nav>
+    <nav class="bottom-nav"><a class="active" href="./ronda.html">Ronda</a><a href="./painel.html">Painel</a><a href="./apoio.html">Atividade</a><a href="./setup.html">Setup</a><a href="./index.html">Mais</a></nav>
   </div>
-
   <script type="module" src="./assets/js/pages/ronda.js"></script>
 </body>
 </html>
