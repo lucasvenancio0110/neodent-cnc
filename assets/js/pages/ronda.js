@@ -78,6 +78,10 @@ function show(text, type = "") {
   msg.className = `form-msg ${type}`.trim();
 }
 
+function userDisplayName() {
+  return user.nome || user.name || user.login || "Usuário";
+}
+
 function currentTurnText() {
   const now = new Date();
   return `${shiftName(getShiftWindowFor(now).id)} • ${fmtDate(now)}`;
@@ -162,6 +166,27 @@ function serializableCalc(calc) {
   };
 }
 
+function buildLiveProjection(payload, calc, created) {
+  const end = calc.endDT || null;
+  return {
+    calculado_em: created.toISOString(),
+    calculado_em_label: `${fmtDate(created)} ${fmtTime(created)}`,
+    previsao_fim: end ? end.toISOString() : null,
+    previsao_fim_label: end ? `${fmtDate(end)} ${fmtTime(end)}` : "Sem previsão",
+    tempo_restante_inicial_min: calc.restMin ?? null,
+    tempo_restante_inicial_texto: calc.restMin != null ? formatMinutes(calc.restMin) : "--",
+    motivo_previsao: calc.reason,
+    motivo_previsao_label: reasonLabel(calc.reason),
+    acao_planejada: payload.acao,
+    acao_planejada_label: actionLabel(payload.acao),
+    status_atividade: calc.showDecision ? "planejado" : "lido",
+    responsavel_nome: "",
+    responsavel_tipo: "",
+    criado_por_nome: userDisplayName(),
+    criado_por_login: user.login || ""
+  };
+}
+
 async function api(path, options = {}) {
   const res = await fetch(API + path, {
     ...options,
@@ -172,14 +197,15 @@ async function api(path, options = {}) {
   return data;
 }
 
-async function gerarCard(payload, calc) {
+async function gerarCard(payload, calc, liveProjection) {
   const acao = actionLabel(payload.acao);
   const preset = payload.preset === "trouxe" ? "Preset já trouxe" : "Preset pendente";
   const item = payload.item ? ` • Item ${payload.item}` : "";
   const detalhe = [
-    `${calc.statusText} • previsão ${calc.endDT ? fmtDate(calc.endDT) + " às " + fmtTime(calc.endDT) : "sem previsão"}`,
+    `${calc.statusText} • previsão ${liveProjection.previsao_fim_label}`,
     `${reasonLabel(calc.reason)} • ${preset}${item}`,
-    `${currentCelula} • Leitura: ${user.login || user.nome || "usuário"}`
+    `Restante inicial: ${liveProjection.tempo_restante_inicial_texto} • Status: ${liveProjection.status_atividade}`,
+    `${currentCelula} • Leitura: ${liveProjection.criado_por_nome}`
   ].join("\n");
 
   return api("/abrir-ocorrencia", {
@@ -193,7 +219,7 @@ async function gerarCard(payload, calc) {
       prioridade: priorityFor(payload, calc),
       precisa_apoio: 0,
       origem: "ronda",
-      payload_ronda: { payload, calcResumo: serializableCalc(calc), celula: currentCelula }
+      payload_ronda: { payload, calcResumo: serializableCalc(calc), celula: currentCelula, previsaoViva: liveProjection }
     })
   });
 }
@@ -208,7 +234,7 @@ function localForCell() { return readLocal()[currentCelula] || {}; }
 function writeMachineReading(machineId, item) { const map = readLocal(); map[currentCelula] = map[currentCelula] || {}; map[currentCelula][machineId] = item; saveLocal(map); }
 function clearCellReadings() { const map = readLocal(); map[currentCelula] = {}; saveLocal(map); renderAll(); }
 function machineTone(reading) { if (!reading) return "empty"; if (reading.tone === "bad") return "bad"; if (reading.tone === "warn") return "warn"; return "ok"; }
-function cardMeta(reading) { if (!reading) return "Sem leitura"; const calc = reading.calc || {}; const end = calc.endAt ? new Date(calc.endAt) : null; return `${calc.statusText || "Lida"} • ${end ? fmtTime(end) : "--:--"}`; }
+function cardMeta(reading) { if (!reading) return "Sem leitura"; const projection = reading.liveProjection || {}; const end = projection.previsao_fim ? new Date(projection.previsao_fim) : null; const calc = reading.calc || {}; return `${calc.statusText || "Lida"} • ${end ? fmtTime(end) : "--:--"}`; }
 
 function renderSummary(readings, machines) {
   const values = machines.map((m) => readings[m.id]).filter(Boolean);
@@ -308,15 +334,16 @@ form.addEventListener("submit", async (event) => {
   if (!payload.tnl) return show("Máquina não encontrada.", "bad");
   if (!calc.valid) return show("Complete os dados.", "bad");
   const created = new Date();
+  const liveProjection = buildLiveProjection(payload, calc, created);
   const machineId = currentMachine?.id || payload.tnl;
-  const localItem = { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), machineId, celula: currentCelula, payload, calc: serializableCalc(calc), acaoLabel: calc.showDecision ? actionLabel(payload.acao) : "Leitura estável", tone: calc.showDecision ? actionTone(payload.acao) : calc.severity, cardGerado: false, createdAt: created.toISOString(), createdLabel: `${fmtDate(created)} ${fmtTime(created)}` };
+  const localItem = { id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), machineId, celula: currentCelula, payload, calc: serializableCalc(calc), liveProjection, acaoLabel: calc.showDecision ? actionLabel(payload.acao) : "Leitura estável", tone: calc.showDecision ? actionTone(payload.acao) : calc.severity, cardGerado: false, createdAt: created.toISOString(), createdLabel: `${fmtDate(created)} ${fmtTime(created)}` };
   try {
-    if (calc.showDecision) { show("Salvando...", "ok"); await gerarCard(payload, calc); localItem.cardGerado = true; }
+    if (calc.showDecision) { show("Salvando previsão viva...", "ok"); await gerarCard(payload, calc, liveProjection); localItem.cardGerado = true; }
     writeMachineReading(machineId, localItem);
     renderAll();
     const updated = machineGrid.querySelector(`[data-machine-id="${machineId}"]`);
     if (updated) updated.classList.add("just-updated");
-    show(localItem.cardGerado ? "Card gerado." : "Salvo.", "ok");
+    show(localItem.cardGerado ? "Card com previsão viva gerado." : "Leitura salva.", "ok");
     setTimeout(closeModal, 520);
   } catch (err) {
     writeMachineReading(machineId, localItem);
