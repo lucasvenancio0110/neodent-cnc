@@ -1,1 +1,7 @@
-/* Estilos específicos do apoio. */
+body{background:linear-gradient(145deg,#071017,#101923 72%);color:#f7fbfc;}
+.activity-metrics{grid-template-columns:repeat(4,minmax(0,1fr));}
+.activity-metrics>div:nth-child(1) strong{color:#ffc166;}
+.activity-metrics>div:nth-child(2) strong{color:#c6a2ff;}
+.activity-metrics>div:nth-child(3) strong{color:#fff;}
+.activity-metrics>div:nth-child(4) strong{font-size:1.05rem;color:#56d5c7;}
+@media(max-width:27rem){.activity-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}}
