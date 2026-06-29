@@ -1,7 +1,32 @@
 body{background:linear-gradient(145deg,#071017,#101923 72%);color:#f7fbfc;}
-.activity-metrics{grid-template-columns:repeat(4,minmax(0,1fr));}
-.activity-metrics>div:nth-child(1) strong{color:#ffc166;}
-.activity-metrics>div:nth-child(2) strong{color:#c6a2ff;}
-.activity-metrics>div:nth-child(3) strong{color:#fff;}
-.activity-metrics>div:nth-child(4) strong{font-size:1.05rem;color:#56d5c7;}
-@media(max-width:27rem){.activity-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.tempo-real-main{gap:.7rem;}
+.live-metrics{grid-template-columns:repeat(4,minmax(0,1fr));}
+.live-metrics>div:nth-child(1) strong{color:#56d5c7;}
+.live-metrics>div:nth-child(2) strong{color:#8bb4ff;}
+.live-metrics>div:nth-child(3) strong{color:#ffc166;}
+.live-metrics>div:nth-child(4) strong{color:#c6a2ff;}
+.live-panel,.sector-panel{display:grid;gap:.55rem;}
+.section-title{display:flex;align-items:center;justify-content:space-between;color:#fff;margin:.1rem 0 .1rem;}
+.section-title strong{font-size:1rem;letter-spacing:-.04em;}
+.section-title span{color:#9fb0b8;font-size:.72rem;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;}
+.live-feed{display:grid;gap:.48rem;}
+.live-item{position:relative;display:grid;grid-template-columns:1.9rem minmax(0,1fr);gap:.55rem;align-items:start;border:1px solid rgba(255,255,255,.10);border-radius:1rem;background:rgba(255,255,255,.055);padding:.62rem .68rem;box-shadow:0 .5rem 1.2rem rgba(0,7,12,.12);animation:liveIn .22s ease both;animation-delay:calc(var(--i,0) * 18ms);}
+.live-item::before{content:"";position:absolute;inset:0 auto 0 0;width:.28rem;border-radius:999px 0 0 999px;background:#8aa0aa;}
+.live-item.setup::before{background:#3978e6;}.live-item.ajuste::before{background:#f59e0b;}.live-item.manut::before{background:#e04f5a;}.live-item.apoio::before{background:#9b5cf6;}
+.live-dot{width:1.9rem;height:1.9rem;border:1px solid rgba(255,255,255,.12);border-radius:.72rem;display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:1rem;}
+.live-content{min-width:0;display:grid;gap:.2rem;}
+.live-content strong{color:#f7fbfc;font-size:.92rem;line-height:1.08;letter-spacing:-.035em;}
+.live-content span{color:#b7c8cf;font-size:.78rem;line-height:1.24;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.live-content em{width:max-content;max-width:100%;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:.14rem .42rem;color:#9fb0b8;background:rgba(255,255,255,.05);font-size:.62rem;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-style:normal;}
+.live-item.setup .live-content em{color:#9fc1ff;background:rgba(57,120,230,.12);border-color:rgba(57,120,230,.22);}
+.live-item.ajuste .live-content em{color:#ffc166;background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.22);}
+.live-item.manut .live-content em{color:#ff8a94;background:rgba(224,79,90,.12);border-color:rgba(224,79,90,.22);}
+.live-item.apoio .live-content em{color:#c6a2ff;background:rgba(155,92,246,.12);border-color:rgba(155,92,246,.22);}
+.sector-groups{display:grid;gap:.55rem;}
+.sector-block{border:1px solid rgba(255,255,255,.10);border-radius:1rem;background:rgba(255,255,255,.045);padding:.68rem .72rem;}
+.sector-block h3{margin:0 0 .45rem;color:#dce8ec;font-size:.72rem;font-weight:1000;text-transform:uppercase;letter-spacing:.12em;}
+.sector-block p{margin:.22rem 0;color:#c5d4da;font-size:.8rem;font-weight:850;line-height:1.22;}
+.sector-block.setup h3{color:#9fc1ff}.sector-block.ajuste h3{color:#ffc166}.sector-block.manut h3{color:#ff8a94}.sector-block.apoio h3{color:#c6a2ff}
+.empty-state{border:1px dashed rgba(255,255,255,.14);background:rgba(255,255,255,.045);color:#b8c7cd;}
+@keyframes liveIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:27rem){.live-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.live-item{grid-template-columns:1.75rem minmax(0,1fr);padding:.58rem .62rem}.live-dot{width:1.75rem;height:1.75rem}.live-content strong{font-size:.88rem}.live-content span{font-size:.74rem}}
