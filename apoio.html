@@ -3,40 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Atividade | Neodent CNC</title>
+  <title>Tempo Real | Neodent CNC</title>
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/pages/ronda.css">
   <link rel="stylesheet" href="./assets/css/pages/apoio.css">
 </head>
 <body>
-  <div class="ronda-app atividade-app">
+  <div class="ronda-app tempo-real-app">
     <header class="ronda-topbar">
-      <div><span class="top-kicker">Atividade</span><strong>Apoio</strong><small>Assumir e concluir atendimentos</small></div>
+      <div>
+        <span class="top-kicker">Tempo real</span>
+        <strong>Linha viva</strong>
+        <small id="tempoRealClock">--:--</small>
+      </div>
       <a href="./painel.html" class="top-link">Painel</a>
     </header>
-
-    <main class="ronda-main app-grid">
-      <section class="ronda-summary activity-metrics">
-        <div><span>Aguardando</span><strong id="aguardandoCount">0</strong></div>
-        <div><span>Atendendo</span><strong id="atendimentoCount">0</strong></div>
-        <div><span>Total</span><strong id="totalCount">0</strong></div>
-        <div><span>Atualizado</span><strong id="lastUpdate">--:--</strong></div>
+    <main class="ronda-main app-grid tempo-real-main">
+      <section class="ronda-summary live-metrics">
+        <div><span>Eventos</span><strong id="eventCount">0</strong></div>
+        <div><span>Setup</span><strong id="setupCount">0</strong></div>
+        <div><span>Ajuste</span><strong id="ajusteCount">0</strong></div>
+        <div><span>Apoio</span><strong id="apoioCount">0</strong></div>
       </section>
-
-      <section id="apoioBoard" class="machine-board">
-        <div class="empty-state">Carregando...</div>
+      <section class="live-panel">
+        <div class="section-title"><strong>Atualizações</strong><span id="lastUpdate">--</span></div>
+        <div id="tempoRealFeed" class="live-feed"><div class="empty-state">Carregando...</div></div>
+      </section>
+      <section class="sector-panel">
+        <div class="section-title"><strong>Situação do setor</strong><span>2T</span></div>
+        <div id="setorResumo" class="sector-groups"><div class="empty-state">Carregando...</div></div>
       </section>
     </main>
-
     <nav class="bottom-nav">
       <a href="./ronda.html">Ronda</a>
       <a href="./painel.html">Painel</a>
-      <a class="active" href="./apoio.html">Atividade</a>
+      <a class="active" href="./apoio.html">Tempo</a>
       <a href="./setup.html">Setup</a>
       <a href="./index.html">Mais</a>
     </nav>
   </div>
-
   <script type="module" src="./assets/js/pages/apoio.js"></script>
 </body>
 </html>
