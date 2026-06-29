@@ -3,30 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Apoio | Neodent CNC</title>
+  <title>Atividade | Neodent CNC</title>
   <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/pages/ronda.css">
   <link rel="stylesheet" href="./assets/css/pages/apoio.css">
 </head>
 <body>
-  <div class="app-shell">
-    <main class="app-main app-grid">
-      <section class="page-hero">
-        <div class="eyebrow">Pedir ajuda</div>
-        <h1>Fila de apoio</h1>
-        <p>Máquinas que alguém abriu e informou que precisa de outro preparador/técnico.</p>
-      </section>
+  <div class="ronda-app atividade-app">
+    <header class="ronda-topbar">
+      <div><span class="top-kicker">Atividade</span><strong>Apoio</strong><small>Assumir e concluir atendimentos</small></div>
+      <a href="./painel.html" class="top-link">Painel</a>
+    </header>
 
-      <section class="metric-grid">
-        <div class="metric"><span>Aguardando</span><strong id="aguardandoCount">0</strong></div>
-        <div class="metric"><span>Em atendimento</span><strong id="atendimentoCount">0</strong></div>
-        <div class="metric"><span>Total aberto</span><strong id="totalCount">0</strong></div>
-        <div class="metric"><span>Última atualização</span><strong id="lastUpdate">--:--</strong></div>
+    <main class="ronda-main app-grid">
+      <section class="ronda-summary activity-metrics">
+        <div><span>Aguardando</span><strong id="aguardandoCount">0</strong></div>
+        <div><span>Atendendo</span><strong id="atendimentoCount">0</strong></div>
+        <div><span>Total</span><strong id="totalCount">0</strong></div>
+        <div><span>Atualizado</span><strong id="lastUpdate">--:--</strong></div>
       </section>
 
       <section id="apoioBoard" class="machine-board">
-        <div class="empty-state">Carregando pedidos de apoio...</div>
+        <div class="empty-state">Carregando...</div>
       </section>
     </main>
+
+    <nav class="bottom-nav">
+      <a href="./ronda.html">Ronda</a>
+      <a href="./painel.html">Painel</a>
+      <a class="active" href="./apoio.html">Atividade</a>
+      <a href="./setup.html">Setup</a>
+      <a href="./index.html">Mais</a>
+    </nav>
   </div>
 
   <script type="module" src="./assets/js/pages/apoio.js"></script>
