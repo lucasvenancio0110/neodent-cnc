@@ -1,1 +1,12 @@
-/* Estilos específicos do portal. */
+body{background:linear-gradient(145deg,#071017,#101923 72%);color:#f7fbfc;}
+.app-shell{min-height:100dvh;background:transparent;}
+.app-main{padding:.75rem .7rem calc(1.3rem + var(--safe-bottom));gap:.7rem;}
+.page-hero{padding:.9rem 1rem;border-radius:1.2rem;}
+.page-hero h1{font-size:1.75rem;}
+.page-hero p{display:none;}
+.portal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;}
+.portal-card{min-height:5.15rem!important;display:grid!important;grid-template-columns:2.05rem minmax(0,1fr)!important;grid-template-rows:auto auto!important;align-items:center!important;gap:.16rem .58rem!important;padding:.72rem!important;border-radius:1.05rem!important;background:rgba(255,255,255,.055)!important;text-decoration:none!important;overflow:hidden!important;}
+.portal-card b{grid-column:1!important;grid-row:1 / span 2!important;width:2.05rem;height:2.05rem;border-radius:.72rem;display:grid;place-items:center;background:rgba(86,213,199,.09);color:#78e2d7;font-size:1.08rem!important;line-height:1!important;align-self:start;}
+.portal-card strong{grid-column:2!important;grid-row:1!important;display:block!important;min-width:0;color:#fff;font-size:1.02rem!important;line-height:1.04!important;letter-spacing:-.045em;white-space:normal;overflow-wrap:break-word;}
+.portal-card span{grid-column:2!important;grid-row:2!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden!important;min-width:0;margin:0!important;color:#aebdc4!important;font-size:.72rem!important;line-height:1.18!important;font-weight:850!important;letter-spacing:0!important;}
+@media(max-width:23rem){.portal-grid{grid-template-columns:1fr}.portal-card{min-height:4.65rem!important}.page-hero h1{font-size:1.55rem}}
