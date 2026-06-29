@@ -1,1 +1,6 @@
-/* Estilos específicos do histórico. */
+body{background:linear-gradient(145deg,#071017,#101923 72%);color:#f7fbfc;}
+.compact-history-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.55rem;align-items:end;padding:.85rem;border-radius:1.15rem;background:#f8fbfb;}
+.compact-history-form .btn{min-height:2.8rem;border-radius:.9rem;padding:0 1rem;}
+#historicoResult{display:grid;gap:.65rem;}
+#historicoResult .form-card,#historicoResult .machine-card{border-radius:1.15rem;}
+@media(max-width:27rem){.compact-history-form{grid-template-columns:1fr auto}.compact-history-form .input{min-height:2.7rem;}}
