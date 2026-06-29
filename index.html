@@ -3,36 +3,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Portal | Neodent CNC</title>
+  <title>Cockpit | Neodent CNC</title>
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/pages/ronda.css">
   <link rel="stylesheet" href="./assets/css/pages/index.css">
 </head>
 <body>
-  <div class="ronda-app portal-app">
-    <header class="ronda-topbar">
+  <div class="ronda-app cockpit-app">
+    <header class="ronda-topbar cockpit-topbar">
       <div>
         <span class="top-kicker">Cockpit</span>
         <strong>Neodent CNC</strong>
-        <small>VENANC Tools</small>
+        <small id="cockpitClock">--:--</small>
       </div>
       <a href="./ronda.html" class="top-link">Ronda</a>
     </header>
 
-    <main class="ronda-main portal-main">
-      <section class="portal-kpis">
-        <div><span>Entrada</span><strong>App</strong></div>
-        <div><span>Modo</span><strong>Fábrica</strong></div>
+    <main class="ronda-main cockpit-main">
+      <section class="cockpit-counts">
+        <div><span>Setup</span><strong id="countSetup">0</strong></div>
+        <div><span>Ajuste</span><strong id="countAjuste">0</strong></div>
+        <div><span>Manut.</span><strong id="countManut">0</strong></div>
+        <div><span>Apoio</span><strong id="countApoio">0</strong></div>
       </section>
 
-      <section class="portal-grid compact-menu">
-        <a class="portal-card primary" href="./ronda.html"><b>⏱</b><div><strong>Ronda</strong><span>Células e leitura</span></div></a>
-        <a class="portal-card" href="./painel.html"><b>▦</b><div><strong>Painel</strong><span>Cards da fábrica</span></div></a>
-        <a class="portal-card live" href="./apoio.html"><b>●</b><div><strong>Tempo</strong><span>Linha viva</span></div></a>
-        <a class="portal-card setup" href="./setup.html"><b>✓</b><div><strong>Setup</strong><span>Liberar ciclo 100%</span></div></a>
-        <a class="portal-card" href="./historico.html"><b>⌕</b><div><strong>Histórico</strong><span>Consulta por TNL</span></div></a>
-        <a class="portal-card" href="./relatorio.html"><b>☰</b><div><strong>Relatório</strong><span>Saída do turno</span></div></a>
-        <a class="portal-card admin" href="./admin.html"><b>⚿</b><div><strong>Admin</strong><span>Usuários</span></div></a>
+      <section class="cockpit-section setup">
+        <a class="cockpit-label" href="./painel.html">SETUP</a>
+        <div id="cockpitSetup" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
+      </section>
+
+      <section class="cockpit-section ajuste">
+        <a class="cockpit-label" href="./painel.html">AJUSTES</a>
+        <div id="cockpitAjuste" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
+      </section>
+
+      <section class="cockpit-section manut">
+        <a class="cockpit-label" href="./painel.html">MANUTENÇÃO PARADA</a>
+        <div id="cockpitManut" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
+      </section>
+
+      <section class="cockpit-section apoio">
+        <a class="cockpit-label" href="./apoio.html">APOIO</a>
+        <div id="cockpitApoio" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
       </section>
     </main>
 
