@@ -28,6 +28,10 @@ async function api(path, options = {}) {
   return data;
 }
 
+function safe(value) {
+  return String(value || "").replace(/[&<>'"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[ch]));
+}
+
 function textOf(item) {
   return `${item.status || ""} ${item.motivo || ""} ${item.detalhe || ""} ${item.observacao || ""}`.toLowerCase();
 }
@@ -39,9 +43,9 @@ function isFaltaMp(item) {
 
 function setupLevel(item) {
   const t = textOf(item);
-  if (t.includes("setup vermelho")) return { emoji: "🔴", label: "Setup vermelho", cls: "level-red" };
-  if (t.includes("setup verde")) return { emoji: "🟢", label: "Setup verde", cls: "level-green" };
-  if (t.includes("setup azul")) return { emoji: "🔵", label: "Setup azul", cls: "level-blue" };
+  if (t.includes("setup vermelho")) return { emoji: "🔴", label: "Vermelho", cls: "level-red" };
+  if (t.includes("setup verde")) return { emoji: "🟢", label: "Verde", cls: "level-green" };
+  if (t.includes("setup azul")) return { emoji: "🔵", label: "Azul", cls: "level-blue" };
   return { emoji: "🔵", label: "Setup", cls: "level-blue" };
 }
 
@@ -54,15 +58,6 @@ function opClass(item) {
   return "op-obs";
 }
 
-function badgeClass(item) {
-  const s = String(item.status || "").toUpperCase();
-  if (s.includes("SETUP")) return "setup";
-  if (s.includes("AJUSTE")) return "ajuste";
-  if (s.includes("MANUT") || isFaltaMp(item)) return "manut";
-  if (s.includes("APOIO") || Number(item.precisa_apoio || 0) === 1) return "apoio";
-  return "obs";
-}
-
 function passaFiltro(item) {
   if (filtro === "TODAS") return true;
   const s = String(item.status || "").toUpperCase();
@@ -71,52 +66,26 @@ function passaFiltro(item) {
   return s.includes(filtro);
 }
 
-function apoioTexto(item) {
-  if (!Number(item.precisa_apoio || 0)) return "Sem apoio";
-  return String(item.apoio_status || "AGUARDANDO").replace("_", " ");
+function shortLabel(item) {
+  const s = String(item.status || "").toUpperCase();
+  if (s.includes("SETUP")) return setupLevel(item).label;
+  if (s.includes("AJUSTE")) return "Ajuste";
+  if (s.includes("MANUT") || isFaltaMp(item)) return "Manut.";
+  if (s.includes("APOIO") || Number(item.precisa_apoio || 0) === 1) return "Apoio";
+  return "Obs.";
 }
 
-function compactDetail(item) {
-  const motivo = item.motivo || "Sem motivo";
-  const detail = String(item.detalhe || item.observacao || "").split("\n").filter(Boolean).join(" • ");
-  return { motivo, detail: detail || "Sem detalhe" };
-}
-
-function titleFor(item, tnl) {
-  if (String(item.status || "").toUpperCase().includes("SETUP")) return `${setupLevel(item).emoji} TNL ${tnl}`;
-  return `TNL ${tnl}`;
-}
-
-function tokenFor(item, tnl) {
-  if (String(item.status || "").toUpperCase().includes("SETUP")) return setupLevel(item).emoji;
-  return tnl;
-}
-
-function card(item) {
+function card(item, index) {
   const tnl = String(item.tnl || "").padStart(3, "0");
   const op = opClass(item);
-  const detail = compactDetail(item);
   const level = setupLevel(item);
-  const urgent = /neste turno|crítica|critica|falta|manut/i.test(`${item.motivo || ""} ${item.detalhe || ""}`);
+  const isSetup = op === "op-setup";
+  const urgent = /neste turno|critica|falta|manut/i.test(`${item.motivo || ""} ${item.detalhe || ""}`);
   return `
-    <article class="factory-card ${op} ${op === "op-setup" ? level.cls : ""} ${urgent ? "card-urgent" : ""}">
-      <div class="factory-head">
-        <div class="factory-title">
-          <div class="factory-token">${tokenFor(item, tnl)}</div>
-          <div class="factory-name">
-            <strong>${titleFor(item, tnl)}</strong>
-            <div class="factory-mini"><span>${item.status || "OBS"}</span><span>${item.aberto_por || "Sistema"}</span></div>
-          </div>
-        </div>
-        <span class="factory-badge ${badgeClass(item)}">${apoioTexto(item)}</span>
-      </div>
-      <div class="factory-body">
-        <div class="factory-detail"><b>${detail.motivo}</b>${detail.detail}</div>
-        <div class="factory-actions">
-          <button class="btn btn-ok" data-action="concluir" data-id="${item.id}">Concluir</button>
-          ${Number(item.precisa_apoio || 0) ? `<button class="btn btn-warn" data-action="assumir" data-id="${item.id}">Assumir</button>` : ""}
-        </div>
-      </div>
+    <article class="factory-tile ${op} ${isSetup ? level.cls : ""} ${urgent ? "urgent" : ""}" style="--i:${index}">
+      <span>${isSetup ? level.emoji : safe(tnl)}</span>
+      <strong>${safe(tnl)}</strong>
+      <em>${safe(shortLabel(item))}</em>
     </article>`;
 }
 
@@ -160,23 +129,6 @@ chips.forEach((chip) => {
     filtro = chip.dataset.filter || "TODAS";
     render();
   });
-});
-
-board.addEventListener("click", async (event) => {
-  const btn = event.target.closest("button[data-action]");
-  if (!btn) return;
-  btn.disabled = true;
-  const id = btn.dataset.id;
-  const action = btn.dataset.action;
-  try {
-    if (action === "concluir") await api("/concluir-ocorrencia", { method: "POST", body: JSON.stringify({ id }) });
-    if (action === "assumir") await api("/assumir-ocorrencia", { method: "POST", body: JSON.stringify({ id }) });
-    await load();
-  } catch (err) {
-    alert(err.message);
-  } finally {
-    btn.disabled = false;
-  }
 });
 
 load();
