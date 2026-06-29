@@ -13,25 +13,27 @@
     <header class="ronda-topbar">
       <div>
         <span class="top-kicker">Ao vivo</span>
-        <strong>Linha viva</strong>
+        <strong>Setor agora</strong>
         <small id="tempoRealClock">--:--</small>
       </div>
       <a href="./ronda.html" class="top-link">Linha</a>
     </header>
     <main class="ronda-main app-grid tempo-real-main">
       <section class="ronda-summary live-metrics">
-        <div><span>Eventos</span><strong id="eventCount">0</strong></div>
+        <div><span>Total</span><strong id="eventCount">0</strong></div>
         <div><span>Setup</span><strong id="setupCount">0</strong></div>
         <div><span>Ajuste</span><strong id="ajusteCount">0</strong></div>
         <div><span>Apoio</span><strong id="apoioCount">0</strong></div>
       </section>
-      <section class="live-panel">
-        <div class="section-title"><strong>Atualizações</strong><span id="lastUpdate">--</span></div>
-        <div id="tempoRealFeed" class="live-feed"><div class="empty-state">Carregando...</div></div>
-      </section>
+
       <section class="sector-panel">
-        <div class="section-title"><strong>Situação do setor</strong><span>2T</span></div>
+        <div class="section-title"><strong>Situação do setor</strong><span id="lastUpdate">--</span></div>
         <div id="setorResumo" class="sector-groups"><div class="empty-state">Carregando...</div></div>
+      </section>
+
+      <section class="live-panel">
+        <div class="section-title"><strong>Últimas movimentações</strong><span>Ao vivo</span></div>
+        <div id="tempoRealFeed" class="live-feed"><div class="empty-state">Carregando...</div></div>
       </section>
     </main>
     <nav class="bottom-nav prep-nav">
