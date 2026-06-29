@@ -5,11 +5,18 @@ const token = localStorage.getItem("nc_token");
 const user = JSON.parse(localStorage.getItem("nc_user") || "null");
 const board = document.getElementById("painelBoard");
 const metrics = document.getElementById("panelMetrics");
+const clock = document.getElementById("panelClock");
 const chips = Array.from(document.querySelectorAll(".filter-chip"));
 let filtro = "TODAS";
 let cache = [];
 
 if (!token || !user) window.location.href = "login.html";
+
+function pad2(n) { return String(n).padStart(2, "0"); }
+function fmtNow() { const d = new Date(); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`; }
+function tick() { if (clock) clock.textContent = fmtNow(); }
+tick();
+setInterval(tick, 1000);
 
 async function api(path, options = {}) {
   const res = await fetch(API + path, {
@@ -38,13 +45,13 @@ function setupLevel(item) {
   return { emoji: "🔵", label: "Setup", cls: "level-blue" };
 }
 
-function statusClass(item) {
+function opClass(item) {
   const s = String(item.status || "").toUpperCase();
-  if (s.includes("SETUP")) return "status-setup";
-  if (s.includes("AJUSTE")) return "status-ajuste";
-  if (s.includes("MANUT") || isFaltaMp(item)) return "status-manutencao";
-  if (s.includes("APOIO")) return "status-apoio";
-  return "status-observacao";
+  if (s.includes("SETUP")) return "op-setup";
+  if (s.includes("AJUSTE")) return "op-ajuste";
+  if (s.includes("MANUT") || isFaltaMp(item)) return "op-manut";
+  if (s.includes("APOIO") || Number(item.precisa_apoio || 0) === 1) return "op-apoio";
+  return "op-obs";
 }
 
 function badgeClass(item) {
@@ -52,7 +59,7 @@ function badgeClass(item) {
   if (s.includes("SETUP")) return "setup";
   if (s.includes("AJUSTE")) return "ajuste";
   if (s.includes("MANUT") || isFaltaMp(item)) return "manut";
-  if (s.includes("APOIO")) return "apoio";
+  if (s.includes("APOIO") || Number(item.precisa_apoio || 0) === 1) return "apoio";
   return "obs";
 }
 
@@ -75,33 +82,37 @@ function compactDetail(item) {
   return { motivo, detail: detail || "Sem detalhe" };
 }
 
-function tnlTitle(item, tnl) {
+function titleFor(item, tnl) {
   if (String(item.status || "").toUpperCase().includes("SETUP")) return `${setupLevel(item).emoji} TNL ${tnl}`;
   return `TNL ${tnl}`;
 }
 
+function tokenFor(item, tnl) {
+  if (String(item.status || "").toUpperCase().includes("SETUP")) return setupLevel(item).emoji;
+  return tnl;
+}
+
 function card(item) {
   const tnl = String(item.tnl || "").padStart(3, "0");
-  const stClass = statusClass(item);
+  const op = opClass(item);
   const detail = compactDetail(item);
-  const isSetup = stClass === "status-setup";
   const level = setupLevel(item);
   const urgent = /neste turno|crítica|critica|falta|manut/i.test(`${item.motivo || ""} ${item.detalhe || ""}`);
   return `
-    <article class="machine-card ${stClass} ${isSetup ? level.cls : ""} ${urgent ? "card-urgent" : ""}">
-      <div class="machine-head">
-        <div class="machine-main">
-          <div class="machine-token">${isSetup ? level.emoji : tnl}</div>
-          <div class="machine-name">
-            <strong>${tnlTitle(item, tnl)}</strong>
-            <div class="machine-mini"><span>${item.status || "OBS"}</span><span>${item.aberto_por || "Sistema"}</span></div>
+    <article class="factory-card ${op} ${op === "op-setup" ? level.cls : ""} ${urgent ? "card-urgent" : ""}">
+      <div class="factory-head">
+        <div class="factory-title">
+          <div class="factory-token">${tokenFor(item, tnl)}</div>
+          <div class="factory-name">
+            <strong>${titleFor(item, tnl)}</strong>
+            <div class="factory-mini"><span>${item.status || "OBS"}</span><span>${item.aberto_por || "Sistema"}</span></div>
           </div>
         </div>
-        <span class="badge ${badgeClass(item)}">${apoioTexto(item)}</span>
+        <span class="factory-badge ${badgeClass(item)}">${apoioTexto(item)}</span>
       </div>
-      <div class="machine-body">
-        <div class="machine-detail"><b>${detail.motivo}</b><span class="detail-line">${detail.detail}</span></div>
-        <div class="machine-actions">
+      <div class="factory-body">
+        <div class="factory-detail"><b>${detail.motivo}</b>${detail.detail}</div>
+        <div class="factory-actions">
           <button class="btn btn-ok" data-action="concluir" data-id="${item.id}">Concluir</button>
           ${Number(item.precisa_apoio || 0) ? `<button class="btn btn-warn" data-action="assumir" data-id="${item.id}">Assumir</button>` : ""}
         </div>
@@ -119,10 +130,10 @@ function renderMetrics() {
     if (s.includes("APOIO") || Number(item.precisa_apoio || 0) === 1) counts.apoio++;
   });
   metrics.innerHTML = `
-    <div class="panel-metric setup"><span>Setup</span><strong>${counts.setup}</strong></div>
-    <div class="panel-metric ajuste"><span>Ajuste</span><strong>${counts.ajuste}</strong></div>
-    <div class="panel-metric manut"><span>Manut.</span><strong>${counts.manut}</strong></div>
-    <div class="panel-metric apoio"><span>Apoio</span><strong>${counts.apoio}</strong></div>`;
+    <div class="setup"><span>Setup</span><strong>${counts.setup}</strong></div>
+    <div class="ajuste"><span>Ajuste</span><strong>${counts.ajuste}</strong></div>
+    <div class="manut"><span>Manut.</span><strong>${counts.manut}</strong></div>
+    <div class="apoio"><span>Apoio</span><strong>${counts.apoio}</strong></div>`;
 }
 
 function render() {
