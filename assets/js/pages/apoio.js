@@ -33,54 +33,39 @@ async function api(path, options = {}) {
 
 function clean(value) { return String(value || "").trim(); }
 function upper(value) { return clean(value).toUpperCase(); }
-function tnlOf(o) { return clean(o.tnl).padStart(3, "0"); }
 function textOf(o) { return `${o.status || ""} ${o.motivo || ""} ${o.detalhe || ""} ${o.observacao || ""}`.toLowerCase(); }
-function person(o) { return clean(o.aberto_por || o.responsavel || o.usuario || "Sistema"); }
+function tnlOf(o) { return clean(o.tnl).padStart(3, "0"); }
 function hasApoio(o) { return upper(o.status).includes("APOIO") || Number(o.precisa_apoio || 0) === 1; }
 function isSetup(o) { return upper(o.status).includes("SETUP") || textOf(o).includes("setup"); }
 function isAjuste(o) { return upper(o.status).includes("AJUSTE") || textOf(o).includes("ajuste"); }
-function isManut(o) { return upper(o.status).includes("MANUT") || textOf(o).includes("manutenção") || textOf(o).includes("manutencao"); }
+function isManut(o) { return upper(o.status).includes("MANUT") || upper(o.status).includes("FALTA") || textOf(o).includes("manutenção") || textOf(o).includes("manutencao") || textOf(o).includes("falta mp"); }
 function isConcluido(o) { return upper(o.status).includes("CONCL") || upper(o.situacao).includes("CONCL") || clean(o.concluido_em); }
-function mainText(o) { return clean(o.motivo || o.observacao || o.detalhe || "Atualização operacional"); }
-function detailText(o) { return clean(o.detalhe || o.observacao || "").split("\n").filter(Boolean).join(" • "); }
+function detailText(o) { return clean(o.detalhe || o.observacao || o.motivo || "").split("\n").filter(Boolean).join(" • "); }
+
+function person(o) {
+  return clean(
+    o.responsavel_nome ||
+    o.responsavel ||
+    o.assumido_por_nome ||
+    o.aberto_por_nome ||
+    o.aberto_por ||
+    o.usuario ||
+    "Sem dono"
+  );
+}
 
 function setupLevel(o) {
   const t = textOf(o);
-  if (t.includes("setup vermelho")) return { emoji: "🔴", label: "Setup vermelho", cls: "setup-red" };
-  if (t.includes("setup verde")) return { emoji: "🟢", label: "Setup verde", cls: "setup-green" };
-  if (t.includes("setup azul")) return { emoji: "🔵", label: "Setup azul", cls: "setup-blue" };
-  return { emoji: "🔵", label: "Setup", cls: "setup-blue" };
-}
-
-function tone(o) {
-  if (isManut(o)) return "manut";
-  if (hasApoio(o)) return "apoio";
-  if (isAjuste(o)) return "ajuste";
-  if (isSetup(o)) return "setup";
-  return "obs";
+  if (t.includes("setup vermelho")) return { emoji: "🔴", label: "Vermelho" };
+  if (t.includes("setup verde")) return { emoji: "🟢", label: "Verde" };
+  if (t.includes("setup azul")) return { emoji: "🔵", label: "Azul" };
+  return { emoji: "🔵", label: "Setup" };
 }
 
 function createdAt(o, index) {
   const raw = o.created_at || o.criado_em || o.aberto_em || o.atualizado_em || o.updated_at || "";
   const ts = Date.parse(raw);
   return Number.isFinite(ts) ? ts : Date.now() - index * 1000;
-}
-
-function feedTitle(o) {
-  const tnl = tnlOf(o);
-  const who = person(o);
-  const level = setupLevel(o);
-  if (isConcluido(o)) return `${who} concluiu TNL ${tnl}`;
-  if (isSetup(o)) return `${who} iniciou ${level.emoji} setup TNL ${tnl}`;
-  if (isAjuste(o)) return `${who} iniciou ajuste TNL ${tnl}`;
-  if (isManut(o)) return `${who} colocou TNL ${tnl} em manutenção`;
-  if (hasApoio(o)) return `Operador pediu apoio na TNL ${tnl}`;
-  return `${who} fez observação na TNL ${tnl}`;
-}
-
-function feedLine(o) {
-  const d = detailText(o);
-  return d || mainText(o);
 }
 
 function uniqueItems(raw) {
@@ -93,76 +78,99 @@ function uniqueItems(raw) {
   return Array.from(map.values()).sort((a, b) => b._sort - a._sort);
 }
 
-function liveItem(o, index) {
-  const t = tone(o);
-  const level = setupLevel(o);
-  const badge = isSetup(o) ? level.label : (o.status || "OBS");
-  return `
-    <article class="live-item ${t}" style="--i:${index}">
-      <div class="live-dot">${isSetup(o) ? level.emoji : ""}</div>
-      <div class="live-content">
-        <strong>${feedTitle(o)}</strong>
-        <span>${feedLine(o)}</span>
-        <em>${badge}</em>
-      </div>
-    </article>`;
-}
-
-function groupTitle(key) {
-  const titles = {
-    manut: "Máquinas em manutenção parada",
-    setup: "Setup",
-    proximo: "Próximos setups",
-    ajuste: "Máquinas em ajustes",
-    apoio: "Pedidos de apoio",
-    obs: "Observações"
-  };
-  return titles[key] || key;
-}
-
-function groupLine(o) {
-  const tnl = tnlOf(o);
-  const level = setupLevel(o);
-  const who = person(o);
-  const done = isConcluido(o) ? "✅" : "";
-  if (isSetup(o)) return `${level.emoji} TNL ${tnl} - ${who}${done}`;
-  return `TNL ${tnl} - ${who}${done}`;
-}
-
 function groupKey(o) {
-  const tx = textOf(o);
   if (isManut(o)) return "manut";
   if (hasApoio(o)) return "apoio";
-  if (isSetup(o) && (tx.includes("próximo") || tx.includes("proximo"))) return "proximo";
   if (isSetup(o)) return "setup";
   if (isAjuste(o)) return "ajuste";
   return "obs";
 }
 
-function renderReport(items) {
-  const groups = { manut: [], setup: [], proximo: [], ajuste: [], apoio: [], obs: [] };
-  items.forEach((o) => groups[groupKey(o)].push(o));
-  const html = Object.entries(groups)
-    .filter(([, list]) => list.length)
-    .map(([key, list]) => `
-      <section class="sector-block ${key}">
-        <h3>${groupTitle(key)}</h3>
-        <div>${list.map((o) => `<p>${groupLine(o)}</p>`).join("")}</div>
+function groupTitle(key) {
+  return ({
+    setup: "SETUP",
+    ajuste: "AJUSTES",
+    manut: "MANUTENÇÃO PARADA",
+    apoio: "APOIO",
+    obs: "OBSERVAÇÕES"
+  })[key] || key;
+}
+
+function cardLabel(o, key) {
+  if (key === "setup") return setupLevel(o).label;
+  if (key === "ajuste") return isConcluido(o) ? "Concluído" : "Ajuste";
+  if (key === "manut") return "Parada";
+  if (key === "apoio") return upper(o.apoio_status || "AGUARDANDO").replace("_", " ");
+  return "Obs.";
+}
+
+function cardToken(o, key) {
+  if (key === "setup") return setupLevel(o).emoji;
+  return tnlOf(o);
+}
+
+function sectorCard(o, key, index) {
+  const done = isConcluido(o) ? "✅" : "";
+  return `
+    <button class="ao-card ${key}" type="button" data-id="${clean(o.id)}" style="--i:${index}">
+      <span>${cardToken(o, key)}</span>
+      <strong>${tnlOf(o)}</strong>
+      <em>${person(o)}${done}</em>
+      <small>${cardLabel(o, key)}</small>
+    </button>`;
+}
+
+function renderGroups(items) {
+  const groups = { setup: [], ajuste: [], manut: [], apoio: [], obs: [] };
+  items.forEach((item) => groups[groupKey(item)].push(item));
+
+  const order = ["setup", "ajuste", "manut", "apoio", "obs"];
+  resumo.innerHTML = order
+    .filter((key) => groups[key].length || key !== "obs")
+    .map((key) => `
+      <section class="ao-group ${key}">
+        <div class="ao-group-title"><h3>${groupTitle(key)}</h3><span>${groups[key].length}</span></div>
+        <div class="ao-grid">
+          ${groups[key].length ? groups[key].map((item, index) => sectorCard(item, key, index)).join("") : `<div class="ao-empty">Sem ${groupTitle(key).toLowerCase()}.</div>`}
+        </div>
       </section>`).join("");
-  resumo.innerHTML = html || `<div class="empty-state">Nenhuma ocorrência aberta.</div>`;
+}
+
+function feedTone(o) { return groupKey(o); }
+function feedTitle(o) {
+  const who = person(o);
+  const tnl = tnlOf(o);
+  const level = setupLevel(o);
+  if (isConcluido(o)) return `${who} concluiu TNL ${tnl}`;
+  if (isSetup(o)) return `${who} iniciou ${level.emoji} setup TNL ${tnl}`;
+  if (isAjuste(o)) return `${who} iniciou ajuste TNL ${tnl}`;
+  if (isManut(o)) return `${who} colocou TNL ${tnl} em manutenção`;
+  if (hasApoio(o)) return `Apoio solicitado na TNL ${tnl}`;
+  return `${who} fez observação na TNL ${tnl}`;
+}
+
+function liveItem(o, index) {
+  const key = feedTone(o);
+  const level = setupLevel(o);
+  return `
+    <article class="live-item ${key}" style="--i:${index}">
+      <div class="live-dot">${key === "setup" ? level.emoji : ""}</div>
+      <div class="live-content">
+        <strong>${feedTitle(o)}</strong>
+        <span>${detailText(o) || "Sem detalhe"}</span>
+        <em>${cardLabel(o, key)}</em>
+      </div>
+    </article>`;
 }
 
 function render(items) {
-  const setup = items.filter(isSetup).length;
-  const ajuste = items.filter(isAjuste).length;
-  const apoio = items.filter(hasApoio).length;
   eventCount.textContent = items.length;
-  setupCount.textContent = setup;
-  ajusteCount.textContent = ajuste;
-  apoioCount.textContent = apoio;
+  setupCount.textContent = items.filter(isSetup).length;
+  ajusteCount.textContent = items.filter(isAjuste).length;
+  apoioCount.textContent = items.filter(hasApoio).length;
   lastUpdate.textContent = timeNow();
-  feed.innerHTML = items.length ? items.slice(0, 30).map(liveItem).join("") : `<div class="empty-state">Sem atualização no momento.</div>`;
-  renderReport(items);
+  renderGroups(items);
+  feed.innerHTML = items.length ? items.slice(0, 12).map(liveItem).join("") : `<div class="empty-state">Sem atualização no momento.</div>`;
 }
 
 async function load() {
@@ -172,8 +180,8 @@ async function load() {
     const apoioItems = apoioRes.status === "fulfilled" ? (apoioRes.value.apoio || []) : [];
     render(uniqueItems([...painelItems, ...apoioItems]));
   } catch (err) {
-    feed.innerHTML = `<div class="empty-state">${err.message}</div>`;
-    resumo.innerHTML = "";
+    resumo.innerHTML = `<div class="empty-state">${err.message}</div>`;
+    feed.innerHTML = "";
   }
 }
 
