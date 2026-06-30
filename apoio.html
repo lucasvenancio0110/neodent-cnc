@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/pages/ronda.css">
   <link rel="stylesheet" href="./assets/css/pages/apoio.css">
+  <link rel="stylesheet" href="./assets/css/components/prep-polish.css">
 </head>
 <body>
   <div class="ronda-app tempo-real-app">
@@ -25,47 +26,25 @@
         <div><span>Ajuste</span><strong id="ajusteCount">0</strong></div>
         <div><span>Apoio</span><strong id="apoioCount">0</strong></div>
       </section>
-
       <section class="sector-panel">
         <div class="section-title"><strong>Situação do setor</strong><span id="lastUpdate">--</span></div>
         <div id="setorResumo" class="sector-groups"><div class="empty-state">Carregando...</div></div>
       </section>
-
       <section class="live-panel">
         <div class="section-title"><strong>Últimas movimentações</strong><span>Ao vivo</span></div>
         <div id="tempoRealFeed" class="live-feed"><div class="empty-state">Carregando...</div></div>
       </section>
     </main>
-
     <div id="aoCardModal" class="ao-modal" hidden>
       <div class="ao-backdrop" data-close-ao-modal></div>
       <section class="ao-sheet" role="dialog" aria-modal="true" aria-labelledby="aoModalTitle">
-        <header class="ao-modal-head">
-          <div>
-            <span id="aoModalKind">Atividade</span>
-            <strong id="aoModalTitle">TNL</strong>
-            <small id="aoModalSub">--</small>
-          </div>
-          <button type="button" class="ao-close" data-close-ao-modal>×</button>
-        </header>
+        <header class="ao-modal-head"><div><span id="aoModalKind">Atividade</span><strong id="aoModalTitle">TNL</strong><small id="aoModalSub">--</small></div><button type="button" class="ao-close" data-close-ao-modal>×</button></header>
         <div id="aoModalBody" class="ao-modal-body"></div>
-        <footer class="ao-modal-actions">
-          <button type="button" data-future-action="assumir">Assumir</button>
-          <button type="button" data-future-action="responsavel">Indicar responsável</button>
-          <button type="button" data-future-action="iniciar">Iniciar</button>
-          <button type="button" data-future-action="concluir">Concluir</button>
-          <button type="button" data-future-action="observacao">Observação</button>
-          <button type="button" data-future-action="apoio">Solicitar apoio</button>
-        </footer>
+        <footer class="ao-modal-actions"><button type="button" data-future-action="assumir">Assumir</button><button type="button" data-future-action="responsavel">Indicar responsável</button><button type="button" data-future-action="iniciar">Iniciar</button><button type="button" data-future-action="concluir">Concluir</button><button type="button" data-future-action="observacao">Observação</button><button type="button" data-future-action="apoio">Solicitar apoio</button></footer>
         <p id="aoModalMsg" class="ao-modal-msg">Ações entram nos próximos commits.</p>
       </section>
     </div>
-
-    <nav class="bottom-nav prep-nav">
-      <a href="./ronda.html">Linha</a>
-      <a class="active" href="./apoio.html">Ao vivo</a>
-      <a href="./relatorio.html">Passagem</a>
-    </nav>
+    <nav class="bottom-nav prep-nav"><a href="./ronda.html">Linha</a><a class="active" href="./apoio.html">Ao vivo</a><a href="./relatorio.html">Passagem</a></nav>
   </div>
   <script type="module" src="./assets/js/pages/apoio.js"></script>
 </body>
