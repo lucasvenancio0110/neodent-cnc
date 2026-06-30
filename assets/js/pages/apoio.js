@@ -175,13 +175,7 @@ function groupKey(o) {
 }
 
 function groupTitle(key) {
-  return ({
-    setup: "SETUP",
-    ajuste: "AJUSTES",
-    manut: "MANUTENÇÃO PARADA",
-    apoio: "APOIO",
-    obs: "OBSERVAÇÕES"
-  })[key] || key;
+  return ({ setup: "SETUP", ajuste: "AJUSTES", manut: "MANUTENÇÃO PARADA", apoio: "APOIO", obs: "OBSERVAÇÕES" })[key] || key;
 }
 
 function cardLabel(o, key) {
@@ -193,42 +187,22 @@ function cardLabel(o, key) {
   return "Obs.";
 }
 
-function cardToken(o, key) {
-  if (key === "setup") return setupLevel(o).emoji;
-  return tnlOf(o);
-}
+function cardToken(o, key) { return key === "setup" ? setupLevel(o).emoji : tnlOf(o); }
 
 function sectorCard(o, key, index) {
   const done = isConcluido(o) ? "✅" : "";
   const count = countdownInfo(o);
-  const countHtml = count.end
-    ? `<small class="ao-countdown ${count.state}" data-base-class="ao-countdown" data-end="${safe(count.end)}">${safe(count.text)}</small>`
-    : `<small>${safe(cardLabel(o, key))}</small>`;
+  const countHtml = count.end ? `<small class="ao-countdown ${count.state}" data-base-class="ao-countdown" data-end="${safe(count.end)}">${safe(count.text)}</small>` : `<small>${safe(cardLabel(o, key))}</small>`;
   const clockClass = count.end && count.state !== "none" && count.state !== "done" ? ` clock-${count.state}` : "";
   const assumidoClass = isAssumido(o) ? " assigned" : "";
-  return `
-    <button class="ao-card ${key}${clockClass}${assumidoClass}" type="button" data-key="${safe(o._key)}" style="--i:${index}">
-      <span>${safe(cardToken(o, key))}</span>
-      <strong>${safe(tnlOf(o))}</strong>
-      <em>${safe(person(o))}${done}</em>
-      ${countHtml}
-    </button>`;
+  return `<button class="ao-card ${key}${clockClass}${assumidoClass}" type="button" data-key="${safe(o._key)}" style="--i:${index}"><span>${safe(cardToken(o, key))}</span><strong>${safe(tnlOf(o))}</strong><em>${safe(person(o))}${done}</em>${countHtml}</button>`;
 }
 
 function renderGroups(items) {
   const groups = { setup: [], ajuste: [], manut: [], apoio: [], obs: [] };
   items.forEach((item) => groups[groupKey(item)].push(item));
-
   const order = ["setup", "ajuste", "manut", "apoio", "obs"];
-  resumo.innerHTML = order
-    .filter((key) => groups[key].length || key !== "obs")
-    .map((key) => `
-      <section class="ao-group ${key}">
-        <div class="ao-group-title"><h3>${groupTitle(key)}</h3><span>${groups[key].length}</span></div>
-        <div class="ao-grid">
-          ${groups[key].length ? groups[key].map((item, index) => sectorCard(item, key, index)).join("") : `<div class="ao-empty">Sem ${groupTitle(key).toLowerCase()}.</div>`}
-        </div>
-      </section>`).join("");
+  resumo.innerHTML = order.filter((key) => groups[key].length || key !== "obs").map((key) => `<section class="ao-group ${key}"><div class="ao-group-title"><h3>${groupTitle(key)}</h3><span>${groups[key].length}</span></div><div class="ao-grid">${groups[key].length ? groups[key].map((item, index) => sectorCard(item, key, index)).join("") : `<div class="ao-empty">Sem ${groupTitle(key).toLowerCase()}.</div>`}</div></section>`).join("");
   updateLiveCountdowns();
 }
 
@@ -251,20 +225,10 @@ function liveItem(o, index) {
   const level = setupLevel(o);
   const count = countdownInfo(o);
   const badge = count.end ? count.text : cardLabel(o, key);
-  return `
-    <article class="live-item ${key}" style="--i:${index}">
-      <div class="live-dot">${key === "setup" ? level.emoji : ""}</div>
-      <div class="live-content">
-        <strong>${safe(feedTitle(o))}</strong>
-        <span>${safe(detailText(o) || "Sem detalhe")}</span>
-        <em class="live-count ${count.state}" ${count.end ? `data-base-class="live-count" data-end="${safe(count.end)}"` : ""}>${safe(badge)}</em>
-      </div>
-    </article>`;
+  return `<article class="live-item ${key}" style="--i:${index}"><div class="live-dot">${key === "setup" ? level.emoji : ""}</div><div class="live-content"><strong>${safe(feedTitle(o))}</strong><span>${safe(detailText(o) || "Sem detalhe")}</span><em class="live-count ${count.state}" ${count.end ? `data-base-class="live-count" data-end="${safe(count.end)}"` : ""}>${safe(badge)}</em></div></article>`;
 }
 
-function modalField(label, value) {
-  return `<div><span>${safe(label)}</span><strong>${safe(value || "--")}</strong></div>`;
-}
+function modalField(label, value) { return `<div><span>${safe(label)}</span><strong>${safe(value || "--")}</strong></div>`; }
 
 function openCardModal(item) {
   activeModalItem = item;
@@ -276,70 +240,54 @@ function openCardModal(item) {
   const createdBy = live.criado_por_nome || item.aberto_por_nome || item.aberto_por || item.usuario || "Sistema";
   const status = item.status_atividade || live.status_atividade || item.situacao || item.status || "Aberto";
   const detail = detailText(item) || "Sem detalhe registrado.";
-
   aoModalKind.textContent = groupTitle(key);
   aoModalTitle.textContent = `TNL ${tnlOf(item)}`;
   aoModalSub.textContent = `${cardToken(item, key)} ${cardLabel(item, key)} • ${person(item)}`.trim();
-  aoModalBody.innerHTML = `
-    <section class="ao-modal-main ${key}">
-      <div class="ao-modal-machine">
-        <span>${safe(cardToken(item, key))}</span>
-        <strong>${safe(tnlOf(item))}</strong>
-        <em>${safe(cardLabel(item, key))}</em>
-      </div>
-      <div class="ao-modal-clock">
-        ${count.end ? `<strong class="modal-countdown ${count.state}" data-base-class="modal-countdown" data-end="${safe(count.end)}">${safe(count.text)}</strong><span>Prev. ${safe(formatDateTime(count.end))}</span>` : `<strong>${safe(status)}</strong><span>Sem previsão viva</span>`}
-      </div>
-    </section>
-    <section class="ao-modal-grid">
-      ${modalField("Responsável", person(item))}
-      ${modalField("Status", status)}
-      ${modalField("Criado por", createdBy)}
-      ${modalField("Célula", item.celula || live.celula || "--")}
-    </section>
-    <section class="ao-modal-detail">
-      <span>Detalhe</span>
-      <p>${safe(detail)}</p>
-    </section>`;
+  aoModalBody.innerHTML = `<section class="ao-modal-main ${key}"><div class="ao-modal-machine"><span>${safe(cardToken(item, key))}</span><strong>${safe(tnlOf(item))}</strong><em>${safe(cardLabel(item, key))}</em></div><div class="ao-modal-clock">${count.end ? `<strong class="modal-countdown ${count.state}" data-base-class="modal-countdown" data-end="${safe(count.end)}">${safe(count.text)}</strong><span>Prev. ${safe(formatDateTime(count.end))}</span>` : `<strong>${safe(status)}</strong><span>Sem previsão viva</span>`}</div></section><section class="ao-modal-grid">${modalField("Responsável", person(item))}${modalField("Status", status)}${modalField("Criado por", createdBy)}${modalField("Célula", item.celula || live.celula || "--")}</section><section class="ao-modal-detail"><span>Detalhe</span><p>${safe(detail)}</p></section>`;
   aoModalMsg.textContent = isAssumido(item) ? "Atividade assumida." : "Escolha uma ação.";
   aoCardModal.hidden = false;
   document.body.classList.add("modal-open");
   updateLiveCountdowns();
 }
 
-function closeCardModal() {
-  activeModalItem = null;
-  aoCardModal.hidden = true;
-  document.body.classList.remove("modal-open");
-}
+function closeCardModal() { activeModalItem = null; aoCardModal.hidden = true; document.body.classList.remove("modal-open"); }
 
-function rerenderWithOverrides() {
+function rerenderWithOverrides(message = "") {
   latestItems = latestItems.map(applyOverride);
   render(latestItems);
   if (activeModalItem) {
     const updated = latestItems.find((item) => item._key === activeModalItem._key);
-    if (updated) openCardModal(updated);
+    if (updated) { openCardModal(updated); if (message) aoModalMsg.textContent = message; }
   }
 }
 
+function saveOverrideForActive(patch) {
+  if (!activeModalItem?._key) return null;
+  const overrides = readOverrides();
+  overrides[activeModalItem._key] = { ...(overrides[activeModalItem._key] || {}), ...patch };
+  saveOverrides(overrides);
+  return overrides[activeModalItem._key];
+}
+
 function assumeActiveItem() {
-  if (!activeModalItem?._key) return;
   const now = new Date().toISOString();
   const name = userDisplayName();
-  const overrides = readOverrides();
-  overrides[activeModalItem._key] = {
-    ...(overrides[activeModalItem._key] || {}),
-    responsavel_nome: name,
-    responsavel_tipo: "Preparador",
-    assumido_por_nome: name,
-    assumido_por_login: user.login || "",
-    assumido_em: now,
-    status_atividade: "assumido",
-    situacao: "ASSUMIDO"
-  };
-  saveOverrides(overrides);
-  aoModalMsg.textContent = `${name} assumiu essa atividade.`;
-  rerenderWithOverrides();
+  const saved = saveOverrideForActive({ responsavel_nome: name, responsavel_tipo: "Preparador", assumido_por_nome: name, assumido_por_login: user.login || "", assumido_em: now, status_atividade: "assumido", situacao: "ASSUMIDO" });
+  if (!saved) return;
+  rerenderWithOverrides(`${name} assumiu essa atividade.`);
+}
+
+function indicateResponsible() {
+  if (!activeModalItem?._key) return;
+  const current = person(activeModalItem) === "Sem dono" ? "" : person(activeModalItem);
+  const name = clean(window.prompt("Quem vai fazer essa atividade?", current) || "");
+  if (!name) return;
+  const typeRaw = clean(window.prompt("Tipo: Operador, Preparador, Técnico ou Líder", activeModalItem.responsavel_tipo || "Operador") || "Operador");
+  const type = ["Operador", "Preparador", "Técnico", "Líder"].includes(typeRaw) ? typeRaw : "Operador";
+  const now = new Date().toISOString();
+  const saved = saveOverrideForActive({ responsavel_nome: name, responsavel_tipo: type, responsavel_indicado_por_nome: userDisplayName(), responsavel_indicado_em: now, status_atividade: "responsavel_indicado", situacao: "RESPONSAVEL_INDICADO" });
+  if (!saved) return;
+  rerenderWithOverrides(`${name} indicado como responsável.`);
 }
 
 function render(items) {
@@ -366,6 +314,7 @@ aoCardModal.addEventListener("click", (event) => {
   const futureAction = event.target.closest("[data-future-action]");
   if (!futureAction) return;
   if (futureAction.dataset.futureAction === "assumir") assumeActiveItem();
+  else if (futureAction.dataset.futureAction === "responsavel") indicateResponsible();
   else aoModalMsg.textContent = "Essa ação entra no próximo commit.";
 });
 
