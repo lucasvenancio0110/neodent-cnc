@@ -21,6 +21,7 @@ const aoModalMsg = document.getElementById("aoModalMsg");
 
 if (!token || !user) window.location.href = "login.html";
 
+const OVERRIDE_KEY = "nc_ao_vivo_overrides_v1";
 let latestItems = [];
 let activeModalItem = null;
 
@@ -52,6 +53,24 @@ function isAjuste(o) { return upper(o.status).includes("AJUSTE") || textOf(o).in
 function isManut(o) { return upper(o.status).includes("MANUT") || upper(o.status).includes("FALTA") || textOf(o).includes("manutenção") || textOf(o).includes("manutencao") || textOf(o).includes("falta mp"); }
 function isConcluido(o) { return upper(o.status).includes("CONCL") || upper(o.situacao).includes("CONCL") || clean(o.concluido_em); }
 function detailText(o) { return clean(o.detalhe || o.observacao || o.motivo || "").split("\n").filter(Boolean).join(" • "); }
+function userDisplayName() { return clean(user.nome || user.name || user.login || "Preparador"); }
+
+function readOverrides() {
+  try { return JSON.parse(localStorage.getItem(OVERRIDE_KEY) || "{}"); }
+  catch (_) { return {}; }
+}
+
+function saveOverrides(map) { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(map)); }
+
+function applyOverride(item) {
+  const key = clean(item._key || item.id || "");
+  const override = readOverrides()[key];
+  return override ? { ...item, ...override, _key: key, _override: override } : item;
+}
+
+function isAssumido(o) {
+  return clean(o.assumido_por_nome || o._override?.assumido_por_nome || "") || upper(o.status_atividade).includes("ASSUM") || upper(o.situacao).includes("ASSUM");
+}
 
 function person(o) {
   return clean(
@@ -142,7 +161,7 @@ function uniqueItems(raw) {
   raw.forEach((item, index) => {
     if (!item) return;
     const id = clean(item.id || `${item.tnl}-${item.status}-${index}`);
-    map.set(id, { ...item, _key: id, _sort: createdAt(item, index) });
+    map.set(id, applyOverride({ ...item, _key: id, _sort: createdAt(item, index) }));
   });
   return Array.from(map.values()).sort((a, b) => b._sort - a._sort);
 }
@@ -166,6 +185,7 @@ function groupTitle(key) {
 }
 
 function cardLabel(o, key) {
+  if (isAssumido(o)) return "Assumido";
   if (key === "setup") return setupLevel(o).label;
   if (key === "ajuste") return isConcluido(o) ? "Concluído" : "Ajuste";
   if (key === "manut") return "Parada";
@@ -185,8 +205,9 @@ function sectorCard(o, key, index) {
     ? `<small class="ao-countdown ${count.state}" data-base-class="ao-countdown" data-end="${safe(count.end)}">${safe(count.text)}</small>`
     : `<small>${safe(cardLabel(o, key))}</small>`;
   const clockClass = count.end && count.state !== "none" && count.state !== "done" ? ` clock-${count.state}` : "";
+  const assumidoClass = isAssumido(o) ? " assigned" : "";
   return `
-    <button class="ao-card ${key}${clockClass}" type="button" data-key="${safe(o._key)}" style="--i:${index}">
+    <button class="ao-card ${key}${clockClass}${assumidoClass}" type="button" data-key="${safe(o._key)}" style="--i:${index}">
       <span>${safe(cardToken(o, key))}</span>
       <strong>${safe(tnlOf(o))}</strong>
       <em>${safe(person(o))}${done}</em>
@@ -217,6 +238,7 @@ function feedTitle(o) {
   const tnl = tnlOf(o);
   const level = setupLevel(o);
   if (isConcluido(o)) return `${who} concluiu TNL ${tnl}`;
+  if (isAssumido(o)) return `${who} assumiu TNL ${tnl}`;
   if (isSetup(o)) return `${who} programou ${level.emoji} setup TNL ${tnl}`;
   if (isAjuste(o)) return `${who} registrou ajuste TNL ${tnl}`;
   if (isManut(o)) return `${who} colocou TNL ${tnl} em manutenção`;
@@ -252,7 +274,7 @@ function openCardModal(item) {
   const data = rondaData(item);
   const live = (forecast && forecast.live) || data.previsaoViva || {};
   const createdBy = live.criado_por_nome || item.aberto_por_nome || item.aberto_por || item.usuario || "Sistema";
-  const status = live.status_atividade || item.situacao || item.status || "Aberto";
+  const status = item.status_atividade || live.status_atividade || item.situacao || item.status || "Aberto";
   const detail = detailText(item) || "Sem detalhe registrado.";
 
   aoModalKind.textContent = groupTitle(key);
@@ -279,7 +301,7 @@ function openCardModal(item) {
       <span>Detalhe</span>
       <p>${safe(detail)}</p>
     </section>`;
-  aoModalMsg.textContent = "Modal visual. Ações entram nos próximos commits.";
+  aoModalMsg.textContent = isAssumido(item) ? "Atividade assumida." : "Escolha uma ação.";
   aoCardModal.hidden = false;
   document.body.classList.add("modal-open");
   updateLiveCountdowns();
@@ -291,15 +313,44 @@ function closeCardModal() {
   document.body.classList.remove("modal-open");
 }
 
+function rerenderWithOverrides() {
+  latestItems = latestItems.map(applyOverride);
+  render(latestItems);
+  if (activeModalItem) {
+    const updated = latestItems.find((item) => item._key === activeModalItem._key);
+    if (updated) openCardModal(updated);
+  }
+}
+
+function assumeActiveItem() {
+  if (!activeModalItem?._key) return;
+  const now = new Date().toISOString();
+  const name = userDisplayName();
+  const overrides = readOverrides();
+  overrides[activeModalItem._key] = {
+    ...(overrides[activeModalItem._key] || {}),
+    responsavel_nome: name,
+    responsavel_tipo: "Preparador",
+    assumido_por_nome: name,
+    assumido_por_login: user.login || "",
+    assumido_em: now,
+    status_atividade: "assumido",
+    situacao: "ASSUMIDO"
+  };
+  saveOverrides(overrides);
+  aoModalMsg.textContent = `${name} assumiu essa atividade.`;
+  rerenderWithOverrides();
+}
+
 function render(items) {
-  latestItems = items;
-  eventCount.textContent = items.length;
-  setupCount.textContent = items.filter(isSetup).length;
-  ajusteCount.textContent = items.filter(isAjuste).length;
-  apoioCount.textContent = items.filter(hasApoio).length;
+  latestItems = items.map(applyOverride);
+  eventCount.textContent = latestItems.length;
+  setupCount.textContent = latestItems.filter(isSetup).length;
+  ajusteCount.textContent = latestItems.filter(isAjuste).length;
+  apoioCount.textContent = latestItems.filter(hasApoio).length;
   lastUpdate.textContent = timeNow();
-  renderGroups(items);
-  feed.innerHTML = items.length ? items.slice(0, 12).map(liveItem).join("") : `<div class="empty-state">Sem atualização no momento.</div>`;
+  renderGroups(latestItems);
+  feed.innerHTML = latestItems.length ? latestItems.slice(0, 12).map(liveItem).join("") : `<div class="empty-state">Sem atualização no momento.</div>`;
   updateLiveCountdowns();
 }
 
@@ -313,7 +364,9 @@ resumo.addEventListener("click", (event) => {
 aoCardModal.addEventListener("click", (event) => {
   if (event.target.closest("[data-close-ao-modal]")) closeCardModal();
   const futureAction = event.target.closest("[data-future-action]");
-  if (futureAction) aoModalMsg.textContent = "Essa ação entra no próximo commit.";
+  if (!futureAction) return;
+  if (futureAction.dataset.futureAction === "assumir") assumeActiveItem();
+  else aoModalMsg.textContent = "Essa ação entra no próximo commit.";
 });
 
 async function load() {
