@@ -1,0 +1,31 @@
+/* Visual unificado do fluxo operacional */
+:root{
+  --neo-bg:#081018;
+  --neo-panel:#111c25;
+  --neo-border:rgba(219,235,241,.12);
+  --neo-text:#f5fbfd;
+  --neo-muted:#91a3ad;
+  --neo-primary:#56d5c7;
+  --neo-blue:#3978e6;
+  --neo-orange:#f59e0b;
+  --neo-red:#e04f5a;
+  --neo-purple:#9b5cf6;
+}
+body{background:linear-gradient(145deg,#071017,#101923 72%)!important;color:var(--neo-text)}
+.ronda-app{min-height:100dvh;padding-bottom:calc(7rem + env(safe-area-inset-bottom))!important;background:linear-gradient(145deg,#071017,#101923 72%)}
+.ronda-main{padding-bottom:calc(7.2rem + env(safe-area-inset-bottom))!important}
+.ronda-topbar{background:rgba(6,13,18,.96)!important;border-bottom:1px solid rgba(255,255,255,.08)!important;box-shadow:0 .45rem 1.4rem rgba(0,0,0,.18)}
+.ronda-topbar strong{color:#f7fbfc!important}.ronda-topbar small{color:#b9c8cf!important}.top-kicker{color:var(--neo-primary)!important}
+.top-link{border-radius:1.35rem!important;border-color:rgba(255,255,255,.14)!important;background:rgba(255,255,255,.08)!important;color:#eaf8fa!important}
+.bottom-nav{position:fixed!important;left:1rem!important;right:1rem!important;bottom:calc(.7rem + env(safe-area-inset-bottom))!important;z-index:80!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:.28rem!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:1.45rem!important;padding:.32rem!important;background:rgba(5,11,15,.94)!important;backdrop-filter:blur(18px)!important;box-shadow:0 1rem 2.6rem rgba(0,0,0,.34)!important}
+.bottom-nav a{min-height:3.05rem!important;border-radius:1.05rem!important;color:#b7c6cd!important;font-size:.86rem!important;font-weight:1000!important;letter-spacing:-.02em!important}
+.bottom-nav a.active{color:#062824!important;background:var(--neo-primary)!important;box-shadow:0 .55rem 1.3rem rgba(86,213,199,.22)!important}.bottom-nav a:nth-child(n+4){display:none!important}
+.ronda-status>div,.ronda-summary>div,.live-metrics>div,.cockpit-counts>div,.panel-metrics>div{background:rgba(255,255,255,.045)!important;border:1px solid var(--neo-border)!important;border-radius:1.08rem!important;box-shadow:none!important}
+.ronda-status span,.ronda-summary span,.live-metrics span,.cockpit-counts span{color:#a8b8c0!important}
+.machine-grid{gap:.55rem!important}.machine-tile{min-height:5.15rem!important;border:1px solid rgba(210,225,230,.13)!important;border-radius:1.18rem!important;background:rgba(255,255,255,.052)!important;color:#d7e4e9!important;box-shadow:none!important;padding:.62rem .7rem!important}
+.machine-tile strong{font-size:1.45rem!important;color:#dce7eb!important;opacity:.76!important}.machine-tile span{font-size:.78rem!important;color:#9facb3!important;line-height:1.15!important}.machine-tile em{font-size:.68rem!important;color:#8798a0!important;letter-spacing:.12em!important;background:transparent!important;padding:0!important}.machine-tile::before{width:.28rem!important;opacity:.6!important;background:#6f7e86!important}
+.machine-tile.ok,.machine-tile.warn,.machine-tile.bad,.machine-tile.op-setup,.machine-tile.op-ajuste,.machine-tile.op-manut,.machine-tile.op-apoio{background:rgba(255,255,255,.06)!important}
+.machine-tile.op-setup{border-color:rgba(57,120,230,.42)!important;background:rgba(57,120,230,.12)!important}.machine-tile.op-setup::before{background:var(--neo-blue)!important;opacity:1!important}.machine-tile.op-setup strong,.machine-tile.op-setup em{color:#9fc1ff!important;opacity:1!important}
+.machine-tile.op-manut{border-color:rgba(224,79,90,.42)!important;background:rgba(224,79,90,.11)!important}.machine-tile.op-manut::before{background:var(--neo-red)!important;opacity:1!important}.machine-tile.op-manut strong,.machine-tile.op-manut em{color:#ff9aa3!important;opacity:1!important}
+.machine-tile.op-ajuste{border-color:rgba(245,158,11,.42)!important;background:rgba(245,158,11,.11)!important}.machine-tile.op-ajuste::before{background:var(--neo-orange)!important;opacity:1!important}.machine-tile.op-ajuste strong,.machine-tile.op-ajuste em{color:#ffc166!important;opacity:1!important}
+.machine-tile.op-apoio{border-color:rgba(155,92,246,.42)!important;background:rgba(155,92,246,.11)!important}.machine-tile.op-apoio::before{background:var(--neo-purple)!important;opacity:1!important}.machine-tile.op-apoio strong,.machine-tile.op-apoio em{color:#c6a2ff!important;opacity:1!important}
