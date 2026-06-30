@@ -1,458 +1,604 @@
 # Neodent CNC
 
-**Neodent CNC** é um painel vivo da linha, alimentado pela ronda do preparador.
+**Neodent CNC** sera reconstruido com foco no fluxo real dos **preparadores e tecnicos de turno**.
 
-O objetivo do sistema é transformar a leitura de tempo das máquinas em decisão operacional: previsão de encerramento, solicitação de preset, setup planejado, atividade assumida, histórico e relatório automático.
+O objetivo agora e parar de remendar telas antigas e criar uma base limpa para:
 
-> Fluxo oficial: **Ronda calcula → decisão vira card → preparador assume → conclui → histórico e relatório saem sozinhos.**
+```text
+Login
+  -> Escolher celula
+  -> Linha
+  -> Atividade
+  -> Historico
+```
+
+> Regra de inicio: o desenvolvimento novo so deve comecar depois do OK explicito do Lucas.
 
 ---
 
-## Estado atual do projeto
+## Decisao principal
 
-Base já criada e funcionando:
+O fluxo antigo com varias paginas soltas nao sera usado como base principal.
 
-- GitHub Pages com telas HTML/CSS/JS.
-- Worker Cloudflare publicado.
-- Banco Cloudflare D1 conectado.
-- Login operacional.
-- Admin operacional.
-- Cadastro de usuários.
-- Worker V5 Core publicado.
-- Documento mestre do fluxo oficial em `docs/NEODENT-CNC-DOCUMENTO-MESTRE.md`.
-- Primeira versão da tela **Ronda** criada.
+As telas antigas ficam congeladas enquanto o novo fluxo e criado em paralelo.
+
+Telas antigas que nao devem guiar o novo desenvolvimento:
+
+```text
+ronda.html
+apoio.html
+setup.html
+painel.html
+relatorio.html
+index.html
+```
+
+Novo fluxo oficial:
+
+```text
+login.html
+preparador-celula.html
+preparador-linha.html
+preparador-atividade.html
+preparador-historico.html
+```
+
+Menu apos escolher a celula:
+
+```text
+Linha | Atividade | Historico
+```
+
+Nao existe mais uma tela separada chamada **Passagem**. A propria tela **Atividade** sera a passagem viva do turno.
 
 ---
 
-## Conceito principal
+## Perfis de acesso
 
-O app não é um formulário de pedido de ajuda.
-
-O preparador abre o app, faz a ronda das máquinas, tira o tempo e o sistema calcula:
-
-- Se a máquina vai encerrar.
-- Quando vai encerrar.
-- Se encerra neste turno, próximo turno ou se está estável.
-- Se o motivo é meta da OP ou falta de matéria-prima.
-- Se precisa solicitar preset.
-- Qual será a próxima ação: sequência, setup azul, setup verde, setup vermelho, falta MP, manutenção ou aguardando definição.
-
-Quando existe uma ação relevante, o sistema gera um card vivo para a liderança.
+| Perfil | Acesso | Regra |
+|---|---|---|
+| Preparador | Janela do proprio turno | Nao ve Atividade do turno anterior antes do seu turno. |
+| Tecnico | Janela do proprio turno | Mesma regra do preparador. |
+| Lider | 24h | Ve todos os turnos, paineis e historicos. |
+| Gerencia | 24h | Ve todos os turnos, paineis e historicos. |
+| Admin | 24h | Gerencia usuarios, regras e parametros. |
 
 ---
 
-## Fluxograma oficial
+## Turnos e janelas de acesso
 
-```text
-LOGIN
-  ↓
-COCKPIT DO TURNO
-  ↓
-RONDA DO PREPARADOR
-  ↓
-TIRA TEMPO DA MÁQUINA
-  ↓
-SISTEMA CALCULA ENCERRAMENTO
-  ↓
-┌─────────────────────────┬─────────────────────────────┐
-│ NÃO ENCERRA             │ ENCERRA EM MENOS DE 16H      │
-│ ↓                       │ ↓                            │
-│ Salva leitura estável   │ Escolhe próxima ação         │
-│ ↓                       │ ↓                            │
-│ Histórico               │ Preset já trouxe?            │
-│                         │ ↓                            │
-│                         │ Gera card no painel          │
-└─────────────────────────┴─────────────────────────────┘
-                            ↓
-                       PAINEL VIVO
-                            ↓
-                 Preparador assume atividade
-                            ↓
-                    Executa ajuste/setup
-                            ↓
-                         Conclui
-                            ↓
-                       Histórico
-                            ↓
-                       Relatório
-```
+| Turno | Horario do turno | Libera acesso | Fecha acesso |
+|---|---:|---:|---:|
+| 1ºT | 06:30 as 14:30 | 06:00 | 15:00 |
+| 2ºT | 14:30 as 22:30 | 14:00 | 23:00 |
+| 3ºT | 22:30 as 06:30 | 22:00 | 07:00 |
 
----
+### Regra de sobreposicao
 
-## Telas oficiais
-
-### `index.html` — Cockpit
-Entrada do sistema. Deve priorizar o fluxo correto: Ronda, Painel Vivo, Minha Atividade, Liberar Setup, Histórico, Relatório e Admin.
-
-### `login.html` — Login
-Autenticação dos usuários pelo Worker e D1.
-
-### `admin.html` — Admin
-Cadastro de usuários, funções e permissões.
-
-Funções principais:
-
-- `PREPARADOR`
-- `TECNICO`
-- `LIDER`
-- `GERENCIA`
-- `ADMIN`
-
-### `ronda.html` — Ronda / Tempo da Linha
-Tela principal do preparador.
-
-O preparador informa:
-
-- Máquina / TNL.
-- Ciclo.
-- Matéria-prima.
-- Barras inteiras.
-- Meta da OP.
-- Peça em mm.
-- Produzidas, quando necessário.
-
-O sistema calcula:
-
-- Previsão de encerramento.
-- Tempo restante.
-- Saldo da OP.
-- Capacidade com MP.
-- Motivo do encerramento.
-- Status operacional.
-
-Se a máquina vai encerrar em menos de 16h, a tela abre a decisão:
-
-- Sequência.
-- Setup azul.
-- Setup verde.
-- Setup vermelho.
-- Falta MP.
-- Manutenção.
-- Aguardando definição.
-
-Também registra preset:
-
-- Ainda não trouxe.
-- Preset já trouxe.
-- Item da próxima OP.
-- Hora para solicitar.
-
-### `painel.html` — Painel Vivo
-Visão da liderança.
-
-Deve agrupar os cards por prioridade:
-
-- Encerra neste turno.
-- Próximo turno.
-- Aguardando ação.
-- Em atendimento.
-- Concluídos recentes.
-
-### `apoio.html` — Minha Atividade
-Esta tela deve evoluir para “Minha Atividade”.
-
-Serve para o preparador:
-
-- Ver fila de cards sem dono.
-- Assumir ajuste/setup/atividade.
-- Pausar quando necessário.
-- Concluir atividade com observação.
-
-### `setup.html` — Liberar Setup
-Registro técnico de setup liberado.
-
-Campos previstos:
-
-- TNL.
-- Item.
-- Ciclo 100%.
-- Tipo de setup.
-- Observação.
-
-Responsável e horário vêm do login.
-
-### `historico.html` — Histórico
-Linha do tempo por TNL, item, evento e responsável.
-
-Deve responder:
-
-- Quem mexeu?
-- Quando mexeu?
-- Qual item?
-- Qual ciclo?
-- Por que encerrou?
-- Preset trouxe?
-- Quem assumiu?
-- Quem concluiu?
-
-### `relatorio.html` — Relatório Automático
-Saída final do turno a partir dos eventos e cards.
-
-Blocos esperados:
-
-- Encerra neste turno.
-- Próximo turno.
-- Preset pendente.
-- Preset já trouxe.
-- Atividades em andamento.
-- Atividades concluídas.
-- Setups liberados.
-- Pendências.
-
----
-
-## Motor da Ronda
-
-Arquivo principal:
-
-```text
-assets/js/core/ronda-engine.js
-```
-
-Responsável por:
-
-- Parser seguro de ciclo.
-- Cálculo de turnos reais.
-- Cálculo de matéria-prima.
-- Cálculo de saldo OP.
-- Cálculo de previsão.
-- Classificação operacional.
-
-### Parser de ciclo
-
-Não usar `parseFloat` direto para ciclo.
-
-O parser deve aceitar:
-
-```text
-1,20 = 1m20s
-1:20 = 1m20s
-90   = 90s
-2,05 = 2m05s
-```
-
-Segundos após vírgula ou dois pontos não podem ser maiores ou iguais a 60.
-
-### Turnos reais
-
-```text
-1º turno: 06:30 até 14:40
-2º turno: 14:40 até 22:40
-3º turno: 22:40 até 06:30
-```
-
-### Status operacional
-
-```text
-< 8h   = Neste turno
-< 16h  = Próximo turno
->= 16h = Estável
-```
-
-### Motivo da previsão
-
-```text
-Se a capacidade com MP acaba antes da meta → Falta de matéria-prima
-Se a meta é atingida antes da MP acabar   → Meta da OP atingida
-```
-
----
-
-## Cards vivos
-
-Um card vivo nasce da leitura da Ronda.
+Pode existir sobreposicao de acesso entre turnos, mas cada usuario operacional fica preso ao painel do proprio turno.
 
 Exemplo:
 
 ```text
-TNL 093 — SETUP VERMELHO
-Encerra neste turno — previsão 18:55
-Preset pendente — Item 326172
-Lido por Lucas às 17:59
+14:10
+1ºT ainda ve o Atividade do 1ºT.
+2ºT entra em pre-turno, mas nao ve o Atividade do 1ºT.
+
+14:30
+2ºT inicia com painel proprio.
+1ºT ainda pode acessar o proprio fechamento ate 15:00.
 ```
 
-Card assumido:
+Lider e Gerencia ficam fora desse bloqueio.
+
+---
+
+## Login e pre-turno
+
+Depois do login, o sistema verifica:
 
 ```text
-TNL 093 — SETUP VERMELHO
-Lucas assumiu às 18:05
-Tempo em andamento: 12 min
+usuario
+cargo
+turno
+nivel de acesso
+horario atual
+janela de acesso
 ```
 
-Card concluído:
+Antes da liberacao:
 
 ```text
-TNL 093 — SETUP VERMELHO
-Concluído por Lucas às 18:45
-Observação: setup liberado, ciclo 100% OK
+Acesso bloqueado
+Seu turno ainda nao foi liberado.
+Libera as HH:MM.
+```
+
+Durante o pre-turno:
+
+```text
+Seu acesso ja esta liberado.
+Seu turno inicia as HH:MM.
+
+[Escolher celula]
+[Historico]
+```
+
+Apos inicio do turno:
+
+```text
+Linha | Atividade | Historico
 ```
 
 ---
 
-## Eventos oficiais
+## Escolha da celula
 
-Cada ação importante deve virar evento.
+Apos login e liberacao, preparador/tecnico escolhe a celula onde vai tirar tempo.
 
-Tipos previstos:
+Tela:
 
-- `leitura_tempo`
-- `previsao_calculada`
-- `card_criado`
-- `preset_pendente`
-- `preset_trouxe`
-- `setup_planejado`
-- `atividade_assumida`
-- `atividade_pausada`
-- `atividade_concluida`
-- `setup_liberado`
-- `card_concluido`
-- `relatorio_gerado`
+```text
+ESCOLHA A CELULA
 
-O sistema deve conseguir reconstruir a vida da máquina no turno a partir desses eventos.
+[ 1 ] [ 2 ]
+[ 3 ] [ 4 ]
+[ 5 ] [ 6 ]
+[ 7 ] [ 8 ]
+[ 9 ] [10 ]
+```
+
+A escolha abre a Linha daquela celula. Deve ser possivel trocar de celula depois.
 
 ---
 
-## Backend / API
+## Linha
 
-API base:
+A tela **Linha** e o monitor vivo da celula.
+
+Objetivos:
+
+- Tirar tempo das maquinas.
+- Monitorar previsao de encerramento.
+- Mostrar contador estimado de pecas.
+- Mostrar pecas restantes.
+- Ajudar o preparador a se programar para buscar materia-prima, vistoriar fluxo e antecipar setup.
+- Enviar situacoes relevantes para a tela Atividade.
+
+### Regra do clique na maquina
+
+| Situacao | Clique | Resultado |
+|---|---|---|
+| Sem leitura | Abre tirar tempo | Formulario de ciclo, meta, produzidas, MP, item e acao. |
+| Com leitura | Abre detalhe vivo | Mostra informacoes calculadas, previsao e contador. Nao abre formulario direto. |
+| Precisa alterar | Botao Alterar dados | Abre configuracao da leitura da maquina. |
+
+### Detalhe vivo da maquina
+
+Exemplo:
 
 ```text
-assets/js/core/config.js
+TNL 095
+Item 465777
+
+Producao estimada: 312 / 790
+Faltam: 478 pecas
+Ciclo: 2m46s
+Previsao: 21:38
+Tempo restante: 2h31
+MP: suficiente / falta MP
+Proxima acao: Setup vermelho / Sequencia / Ajuste
+
+[Corrigir produzidas]
+[Alterar dados]
+[Adicionar observacao]
+[Enviar/atualizar Atividade]
 ```
 
-Worker atual publicado em Cloudflare:
+### Contador estimado
+
+Ao salvar uma leitura, o sistema guarda:
 
 ```text
-https://neodent-cnc-api.lucassantanals0110.workers.dev
+produzidas_inicial
+horario_leitura
+ciclo_segundos
+meta_op
+pecas_mp
+previsao_fim
 ```
 
-Rotas principais previstas/necessárias:
+A tela calcula em tempo real:
 
 ```text
-/auth/login
-/auth/me
-/auth/logout
-/admin/usuarios
-/painel-geral
-/abrir-ocorrencia
-/assumir-ocorrencia
-/concluir-ocorrencia
+pecas_estimadas = tempo_passado / ciclo
+produzidas_agora = produzidas_inicial + pecas_estimadas
+faltam = meta_op - produzidas_agora
+tempo_restante = faltam * ciclo
 ```
 
-Rotas que devem evoluir para o fluxo final:
+O preparador pode corrigir as produzidas reais quando a maquina nao estiver fluindo conforme o previsto.
+
+---
+
+## Atividade
+
+A tela **Atividade** e o painel geral da fabrica para o turno.
+
+Ela substitui o modelo manual de passagem do WhatsApp.
+
+Ordem oficial dos blocos:
 
 ```text
-/ronda/leituras
-/ronda/gerar-card
-/atividades
-/atividades/:id/assumir
-/atividades/:id/concluir
-/setup/liberar
-/historico/tnl/:tnl
-/relatorio/turno
+MAQUINAS EM SETUP
+MAQUINAS EM AJUSTES
+PROXIMOS SETUPS
+SETUPS 3ºT
+MAQUINAS EM MANUTENCAO
+-----------------------
+ULTIMAS MOVIMENTACOES
+-----------------------
+PRECISANDO DE APOIO
+-----------------------
+CONCLUIDAS (minimizado)
+```
+
+### Maquinas em setup
+
+Mostra setups acontecendo agora.
+
+O card deve exibir:
+
+```text
+numero da TNL
+cor do setup
+quem esta fazendo
+status
+```
+
+Exemplo:
+
+```text
+Setup vermelho - TNL 044 - NATTAN
+Setup vermelho - TNL 057 - EVERSON
+Setup vermelho - TNL 096 - MARCIO
+```
+
+### Maquinas em ajustes
+
+Mostra ajustes acontecendo agora.
+
+Exemplo:
+
+```text
+TNL 031 - CHRISTOFFER
+TNL 037 - LUCAS V
+TNL 052 - WILLIANS
+```
+
+Se alguem aceitou apoio em um ajuste, o nome aparece normalmente em **Maquinas em ajustes**.
+
+Nao existe categoria de apoio concluido.
+
+### Proximos setups
+
+Mostra setups previstos para o turno atual, ordenados pelo horario previsto.
+
+Exemplo:
+
+```text
+Setup vermelho - TNL 112 - Setup 2ºT (18:20)
+Setup vermelho - TNL 093 - Setup 2ºT (18:30)
+Setup azul - TNL 074 - Setup 2ºT (19:30)
+```
+
+Quando iniciar, sai de **Proximos setups** e entra em **Maquinas em setup**.
+
+### Setups 3ºT
+
+Mostra setups que ficarao para o proximo turno.
+
+No 2ºT, o bloco aparece como:
+
+```text
+SETUPS 3ºT
+```
+
+No futuro, o nome pode ser calculado conforme o turno atual.
+
+### Maquinas em manutencao
+
+Manutencao nao e feita pela equipe de preparacao.
+
+A preparacao registra apenas o parecer/chamado para outro setor.
+
+Nao deve ter:
+
+```text
+Assumir
+Iniciar
+Indicar preparador
+```
+
+Campos previstos:
+
+```text
+TNL
+Descricao
+Chamado aberto? Sim/Nao
+Numero do chamado opcional
+Observacao
 ```
 
 ---
 
-## Cloudflare / D1
+## Apoio
 
-Arquivos relevantes:
+Apoio nao e tipo de atividade independente.
 
-```text
-sql/auth-v1.sql
-cloudflare/worker-auth-v4.js
-docs/ORDEM-DE-INSTALACAO.md
-```
+Apoio e uma condicao de uma atividade de **setup** ou **ajuste**.
 
-O Worker já foi consolidado em uma versão core maior durante o desenvolvimento. Evitar ficar criando Worker picado; novas telas devem usar rotas genéricas sempre que possível.
+Manutencao nao pergunta apoio.
 
----
-
-## Estrutura atual
+Fluxo:
 
 ```text
-index.html
-login.html
-admin.html
-ronda.html
-painel.html
-tempo-linha.html
-preparadores.html
-apoio.html
-setup.html
-historico.html
-relatorio.html
+Escolhe Setup ou Ajuste
+Preenche TNL e informacoes principais
+Pergunta: Precisa de apoio?
 
-assets/css/
-assets/js/
-assets/js/core/ronda-engine.js
-assets/js/pages/ronda.js
+Se NAO:
+  - Eu mesmo
+  - Indicar nome
 
-docs/NEODENT-CNC-DOCUMENTO-MESTRE.md
+Se SIM:
+  - Escreve mensagem de apoio
+  - Aparece no bloco Precisando de apoio
+  - Alguem aceita e vira responsavel do setup/ajuste
 ```
 
----
-
-## Regras de UX/UI
-
-O app precisa ter cara de ferramenta de fábrica, não de site.
-
-Deve ter:
-
-- Mobile-first.
-- Topo pequeno e fixo.
-- Navegação inferior.
-- Cards compactos.
-- Botões grandes para ação.
-- Poucos campos por etapa.
-- Informação principal em destaque.
-- Cores por prioridade.
-
-Não deve ter:
-
-- Hero gigante em toda tela.
-- Textão operacional.
-- Formulário longo sem necessidade.
-- Card branco enorme sem hierarquia.
-- Pergunta inútil de célula/linha na abertura.
-- Tela travada em “carregando”.
-- Botão escondido atrás da barra do navegador.
-
----
-
-## Ordem de desenvolvimento daqui para frente
-
-1. Finalizar `ronda.html` como tela principal do preparador.
-2. Garantir que leitura salva gere card vivo corretamente.
-3. Refazer `painel.html` para agrupar cards por prioridade.
-4. Transformar `apoio.html` em `Minha Atividade`.
-5. Conectar `setup.html` ao card assumido e ao histórico.
-6. Criar histórico real por TNL/evento.
-7. Fazer relatório automático puxando os eventos do turno.
-8. Melhorar testes Playwright para cobrir Ronda → Painel → Atividade → Relatório.
-
----
-
-## Pergunta obrigatória antes de criar qualquer função
+Bloco Precisando de apoio:
 
 ```text
-Essa tela ajuda a ronda virar decisão?
-Essa decisão vira card?
-Esse card pode ser assumido?
-Essa ação vai para histórico?
-Esse histórico alimenta o relatório?
+PRECISANDO DE APOIO
+
+TNL 087
+Setup vermelho - Quebrando bedame. alguem disponivel?
+Solicitado por Lucas V
+
+[Estou indo]
 ```
 
-Se a resposta for não, a função provavelmente está fora do fluxo principal.
+Depois que alguem aceita:
+
+- Se era ajuste, aparece em **Maquinas em ajustes** com o nome de quem aceitou/faz.
+- Se era setup, aparece em **Maquinas em setup** com o nome de quem aceitou/faz.
+- Ao concluir, vai para **Concluidas** dentro da categoria principal.
+- Nao existe categoria **Apoios** em Concluidas.
 
 ---
 
-## Documentação mestre
+## Concluidas
 
-O documento oficial de memória do projeto está em:
+**Concluidas** deve aparecer na tela, mas sempre minimizado por padrao.
+
+Ao abrir, separa por categoria principal:
 
 ```text
-docs/NEODENT-CNC-DOCUMENTO-MESTRE.md
+CONCLUIDAS 12 [fechado]
+
+Ao abrir:
+
+MAQUINAS EM SETUP
+OK - Setup vermelho - TNL 096 - MARCIO
+OK - Setup vermelho - TNL 044 - NATTAN
+
+MAQUINAS EM AJUSTES
+OK - TNL 087 - WENDEL
+OK - TNL 037 - LUCAS V
+
+MAQUINAS EM MANUTENCAO
+OK - TNL 055 - Manutencao liberada
 ```
 
-Ele deve ser usado como referência antes de qualquer alteração grande no app.
+Nao existe categoria de apoio nas concluidas.
+
+---
+
+## Ultimas movimentacoes
+
+Fica abaixo da situacao do setor e acima de Precisando de apoio.
+
+Deve ser simples, curto e sem excesso de informacao.
+
+Exemplo:
+
+```text
+Luciano iniciou setup na TNL 098
+Wendel aceitou apoio na TNL 087
+Lucas V concluiu ajuste na TNL 037
+Lucas V abriu chamado de manutencao na TNL 055
+```
+
+---
+
+## Botao + Adicionar no Atividade
+
+No topo da tela Atividade deve existir um botao:
+
+```text
++ Adicionar
+```
+
+Opcoes principais:
+
+```text
+Setup
+Ajuste
+Manutencao
+```
+
+| Tipo | Campos | Pergunta apoio? | Destino |
+|---|---|---|---|
+| Setup | TNL, cor, status, responsavel ou apoio, horario previsto quando aplicavel | Sim | Maquinas em setup, Proximos setups ou Setups 3ºT |
+| Ajuste | TNL, responsavel ou apoio, detalhe opcional | Sim | Maquinas em ajustes |
+| Manutencao | TNL, descricao, chamado aberto, numero do chamado opcional | Nao | Maquinas em manutencao |
+
+---
+
+## Historico
+
+O Historico salva somente como terminou a tela **Atividade** do turno.
+
+Salva:
+
+```text
+Maquinas em setup
+Maquinas em ajustes
+Proximos setups
+Setups 3ºT / proximo turno
+Maquinas em manutencao
+Ultimas movimentacoes
+Precisando de apoio
+Concluidas
+```
+
+Nao salva:
+
+```text
+tempo das linhas
+contador estimado de pecas
+leitura individual da celula
+detalhes internos de cada tomada de tempo
+```
+
+Exemplo:
+
+```text
+HISTORICO
+
+30/06/2026 - 2ºT - Ver fechamento
+30/06/2026 - 1ºT - Ver fechamento
+29/06/2026 - 3ºT - Ver fechamento
+```
+
+---
+
+## Dados base
+
+### Atividade
+
+```json
+{
+  "id": "atividade_001",
+  "turno": "2T",
+  "data_operacional": "2026-06-30",
+  "tipo": "SETUP",
+  "grupo": "MAQUINAS_EM_SETUP",
+  "tnl": "087",
+  "setup_nivel": "vermelho",
+  "responsavel_nome": "WENDEL",
+  "status": "EM_ANDAMENTO",
+  "precisa_apoio": false,
+  "apoio_mensagem": "",
+  "descricao": "",
+  "horario_previsto": "18:20",
+  "concluido": false,
+  "criado_por_nome": "Lucas V",
+  "criado_em": "2026-06-30T14:45:00"
+}
+```
+
+### Leitura da Linha
+
+```json
+{
+  "id": "leitura_001",
+  "turno": "2T",
+  "celula": "5",
+  "tnl": "095",
+  "item": "465777",
+  "ciclo_segundos": 166,
+  "meta_op": 790,
+  "produzidas_inicial": 312,
+  "horario_leitura": "2026-06-30T15:00:00",
+  "pecas_mp": 520,
+  "previsao_fim": "2026-06-30T21:38:00",
+  "acao": "SETUP_VERMELHO"
+}
+```
+
+### Fechamento de Historico
+
+```json
+{
+  "id": "fechamento_2026-06-30_2T",
+  "turno": "2T",
+  "data_operacional": "2026-06-30",
+  "fechado_em": "2026-06-30T23:00:00",
+  "snapshot_atividade": {
+    "maquinas_em_setup": [],
+    "maquinas_em_ajustes": [],
+    "proximos_setups": [],
+    "setups_3t": [],
+    "maquinas_em_manutencao": [],
+    "ultimas_movimentacoes": [],
+    "precisando_apoio": [],
+    "concluidas": []
+  }
+}
+```
+
+---
+
+## Estrutura nova sugerida
+
+```text
+preparador-celula.html
+preparador-linha.html
+preparador-atividade.html
+preparador-historico.html
+
+assets/css/preparador.css
+
+assets/js/preparador/session.js
+assets/js/preparador/store.js
+assets/js/preparador/celula.js
+assets/js/preparador/linha.js
+assets/js/preparador/atividade.js
+assets/js/preparador/historico.js
+```
+
+---
+
+## Ordem de desenvolvimento
+
+1. Login + guard de turno.
+2. Escolha da celula.
+3. Linha nova com tirar tempo, detalhe vivo e alterar dados.
+4. Store local para prototipo.
+5. Atividade nova com blocos oficiais.
+6. Apoio como condicao de setup/ajuste.
+7. Concluidas minimizado por categoria.
+8. Historico com snapshot do Atividade.
+9. Migrar para Worker/D1 depois do fluxo aprovado.
+
+---
+
+## Pontos a validar antes de codar
+
+- Lista oficial de TNLs por celula 1 a 10.
+- Nomes oficiais dos preparadores/tecnicos.
+- Se o bloco Setups 3ºT deve mudar automaticamente conforme o turno.
+- Se o fechamento no Historico sera automatico, manual por Lider/Gerencia, ou os dois.
+- Cargos exatos no login: Preparador, Tecnico, Lider, Gerencia e Admin.
+
+---
+
+## Status
+
+```text
+Documento PDF gerado para analise.
+README atualizado com a arquitetura nova.
+Aguardando OK do Lucas para iniciar o desenvolvimento.
+```
