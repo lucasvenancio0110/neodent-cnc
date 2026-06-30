@@ -3,22 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Cockpit | Neodent CNC</title>
+  <title>Fábrica | Neodent CNC</title>
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/pages/ronda.css">
   <link rel="stylesheet" href="./assets/css/pages/index.css">
+  <link rel="stylesheet" href="./assets/css/components/prep-polish.css">
 </head>
 <body>
   <div class="ronda-app cockpit-app">
     <header class="ronda-topbar cockpit-topbar">
-      <div>
-        <span class="top-kicker">Cockpit</span>
-        <strong>Neodent CNC</strong>
-        <small id="cockpitClock">--:--</small>
-      </div>
-      <a href="./ronda.html" class="top-link">Ronda</a>
+      <div><span class="top-kicker">Fábrica</span><strong>Neodent CNC</strong><small id="cockpitClock">--:--</small></div>
+      <a href="./ronda.html" class="top-link">Linha</a>
     </header>
-
     <main class="ronda-main cockpit-main">
       <section class="cockpit-counts">
         <div><span>Setup</span><strong id="countSetup">0</strong></div>
@@ -26,35 +22,12 @@
         <div><span>Manut.</span><strong id="countManut">0</strong></div>
         <div><span>Apoio</span><strong id="countApoio">0</strong></div>
       </section>
-
-      <section class="cockpit-section setup">
-        <a class="cockpit-label" href="./painel.html">SETUP</a>
-        <div id="cockpitSetup" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
-      </section>
-
-      <section class="cockpit-section ajuste">
-        <a class="cockpit-label" href="./painel.html">AJUSTES</a>
-        <div id="cockpitAjuste" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
-      </section>
-
-      <section class="cockpit-section manut">
-        <a class="cockpit-label" href="./painel.html">MANUTENÇÃO PARADA</a>
-        <div id="cockpitManut" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
-      </section>
-
-      <section class="cockpit-section apoio">
-        <a class="cockpit-label" href="./apoio.html">APOIO</a>
-        <div id="cockpitApoio" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div>
-      </section>
+      <section class="cockpit-section setup"><a class="cockpit-label" href="./painel.html">SETUP</a><div id="cockpitSetup" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div></section>
+      <section class="cockpit-section ajuste"><a class="cockpit-label" href="./painel.html">AJUSTES</a><div id="cockpitAjuste" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div></section>
+      <section class="cockpit-section manut"><a class="cockpit-label" href="./painel.html">MANUTENÇÃO PARADA</a><div id="cockpitManut" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div></section>
+      <section class="cockpit-section apoio"><a class="cockpit-label" href="./apoio.html">APOIO</a><div id="cockpitApoio" class="cockpit-grid"><div class="cockpit-empty">Carregando...</div></div></section>
     </main>
-
-    <nav class="bottom-nav">
-      <a href="./ronda.html">Ronda</a>
-      <a href="./painel.html">Painel</a>
-      <a href="./apoio.html">Tempo</a>
-      <a href="./setup.html">Setup</a>
-      <a class="active" href="./index.html">Mais</a>
-    </nav>
+    <nav class="bottom-nav prep-nav"><a href="./ronda.html">Linha</a><a href="./apoio.html">Ao vivo</a><a href="./relatorio.html">Passagem</a></nav>
   </div>
   <script type="module" src="./assets/js/pages/index.js"></script>
 </body>
