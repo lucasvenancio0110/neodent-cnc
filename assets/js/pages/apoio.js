@@ -12,8 +12,17 @@ const ajusteCount = document.getElementById("ajusteCount");
 const apoioCount = document.getElementById("apoioCount");
 const lastUpdate = document.getElementById("lastUpdate");
 const clock = document.getElementById("tempoRealClock");
+const aoCardModal = document.getElementById("aoCardModal");
+const aoModalKind = document.getElementById("aoModalKind");
+const aoModalTitle = document.getElementById("aoModalTitle");
+const aoModalSub = document.getElementById("aoModalSub");
+const aoModalBody = document.getElementById("aoModalBody");
+const aoModalMsg = document.getElementById("aoModalMsg");
 
 if (!token || !user) window.location.href = "login.html";
+
+let latestItems = [];
+let activeModalItem = null;
 
 function pad2(n) { return String(n).padStart(2, "0"); }
 function timeNow() { const d = new Date(); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
@@ -95,6 +104,12 @@ function formatDuration(mins) {
   return `${value}min`;
 }
 
+function formatDateTime(value) {
+  const d = new Date(value);
+  if (!Number.isFinite(d.getTime())) return "--";
+  return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
 function countdownInfo(o, now = Date.now()) {
   if (isConcluido(o)) return { text: "Concluído", state: "done", end: "" };
   const forecast = forecastOf(o);
@@ -127,7 +142,7 @@ function uniqueItems(raw) {
   raw.forEach((item, index) => {
     if (!item) return;
     const id = clean(item.id || `${item.tnl}-${item.status}-${index}`);
-    map.set(id, { ...item, _sort: createdAt(item, index) });
+    map.set(id, { ...item, _key: id, _sort: createdAt(item, index) });
   });
   return Array.from(map.values()).sort((a, b) => b._sort - a._sort);
 }
@@ -171,7 +186,7 @@ function sectorCard(o, key, index) {
     : `<small>${safe(cardLabel(o, key))}</small>`;
   const clockClass = count.end && count.state !== "none" && count.state !== "done" ? ` clock-${count.state}` : "";
   return `
-    <button class="ao-card ${key}${clockClass}" type="button" data-id="${safe(clean(o.id))}" style="--i:${index}">
+    <button class="ao-card ${key}${clockClass}" type="button" data-key="${safe(o._key)}" style="--i:${index}">
       <span>${safe(cardToken(o, key))}</span>
       <strong>${safe(tnlOf(o))}</strong>
       <em>${safe(person(o))}${done}</em>
@@ -225,7 +240,59 @@ function liveItem(o, index) {
     </article>`;
 }
 
+function modalField(label, value) {
+  return `<div><span>${safe(label)}</span><strong>${safe(value || "--")}</strong></div>`;
+}
+
+function openCardModal(item) {
+  activeModalItem = item;
+  const key = groupKey(item);
+  const forecast = forecastOf(item);
+  const count = countdownInfo(item);
+  const data = rondaData(item);
+  const live = (forecast && forecast.live) || data.previsaoViva || {};
+  const createdBy = live.criado_por_nome || item.aberto_por_nome || item.aberto_por || item.usuario || "Sistema";
+  const status = live.status_atividade || item.situacao || item.status || "Aberto";
+  const detail = detailText(item) || "Sem detalhe registrado.";
+
+  aoModalKind.textContent = groupTitle(key);
+  aoModalTitle.textContent = `TNL ${tnlOf(item)}`;
+  aoModalSub.textContent = `${cardToken(item, key)} ${cardLabel(item, key)} • ${person(item)}`.trim();
+  aoModalBody.innerHTML = `
+    <section class="ao-modal-main ${key}">
+      <div class="ao-modal-machine">
+        <span>${safe(cardToken(item, key))}</span>
+        <strong>${safe(tnlOf(item))}</strong>
+        <em>${safe(cardLabel(item, key))}</em>
+      </div>
+      <div class="ao-modal-clock">
+        ${count.end ? `<strong class="modal-countdown ${count.state}" data-base-class="modal-countdown" data-end="${safe(count.end)}">${safe(count.text)}</strong><span>Prev. ${safe(formatDateTime(count.end))}</span>` : `<strong>${safe(status)}</strong><span>Sem previsão viva</span>`}
+      </div>
+    </section>
+    <section class="ao-modal-grid">
+      ${modalField("Responsável", person(item))}
+      ${modalField("Status", status)}
+      ${modalField("Criado por", createdBy)}
+      ${modalField("Célula", item.celula || live.celula || "--")}
+    </section>
+    <section class="ao-modal-detail">
+      <span>Detalhe</span>
+      <p>${safe(detail)}</p>
+    </section>`;
+  aoModalMsg.textContent = "Modal visual. Ações entram nos próximos commits.";
+  aoCardModal.hidden = false;
+  document.body.classList.add("modal-open");
+  updateLiveCountdowns();
+}
+
+function closeCardModal() {
+  activeModalItem = null;
+  aoCardModal.hidden = true;
+  document.body.classList.remove("modal-open");
+}
+
 function render(items) {
+  latestItems = items;
   eventCount.textContent = items.length;
   setupCount.textContent = items.filter(isSetup).length;
   ajusteCount.textContent = items.filter(isAjuste).length;
@@ -235,6 +302,19 @@ function render(items) {
   feed.innerHTML = items.length ? items.slice(0, 12).map(liveItem).join("") : `<div class="empty-state">Sem atualização no momento.</div>`;
   updateLiveCountdowns();
 }
+
+resumo.addEventListener("click", (event) => {
+  const card = event.target.closest(".ao-card");
+  if (!card) return;
+  const item = latestItems.find((entry) => entry._key === card.dataset.key);
+  if (item) openCardModal(item);
+});
+
+aoCardModal.addEventListener("click", (event) => {
+  if (event.target.closest("[data-close-ao-modal]")) closeCardModal();
+  const futureAction = event.target.closest("[data-future-action]");
+  if (futureAction) aoModalMsg.textContent = "Essa ação entra no próximo commit.";
+});
 
 async function load() {
   try {
