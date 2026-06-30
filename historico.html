@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/pages/ronda.css">
   <link rel="stylesheet" href="./assets/css/pages/historico.css">
+  <link rel="stylesheet" href="./assets/css/components/prep-polish.css">
 </head>
 <body>
   <div class="ronda-app historico-app">
     <header class="ronda-topbar">
       <div><span class="top-kicker">Histórico</span><strong>Consulta</strong><small>Linha do tempo por TNL</small></div>
-      <a href="./painel.html" class="top-link">Painel</a>
+      <a href="./apoio.html" class="top-link">Ao vivo</a>
     </header>
-
     <main class="ronda-main app-grid">
       <form id="historicoForm" class="form-card action-row compact-history-form">
         <div class="field" style="flex:1;"><label>TNL</label><input class="input" name="tnl" required placeholder="112"></div>
@@ -22,14 +22,7 @@
       </form>
       <section id="historicoResult"></section>
     </main>
-
-    <nav class="bottom-nav">
-      <a href="./ronda.html">Ronda</a>
-      <a href="./painel.html">Painel</a>
-      <a href="./apoio.html">Atividade</a>
-      <a href="./setup.html">Setup</a>
-      <a class="active" href="./index.html">Mais</a>
-    </nav>
+    <nav class="bottom-nav prep-nav"><a href="./ronda.html">Linha</a><a href="./apoio.html">Ao vivo</a><a href="./relatorio.html">Passagem</a></nav>
   </div>
   <script type="module" src="./assets/js/pages/historico.js"></script>
 </body>
